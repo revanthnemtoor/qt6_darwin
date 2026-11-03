@@ -17,3 +17,4 @@ target_link_libraries(qt6_smoketest PRIVATE
     Qt6::Network
     Qt6::Sql
 )
+

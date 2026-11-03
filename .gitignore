@@ -4,7 +4,9 @@ staging/
 logs/
 sources/
 packages/dist/
+out/
 tests/**/build/
+.vscode/
 *.pkg.tar.zst
 *.pkg.tar.xz
 *.pkg.tar.gz
