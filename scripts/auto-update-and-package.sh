@@ -305,7 +305,7 @@ EOF
         cd "${STAGE_DIR}"
         export LC_COLLATE=C
         shopt -s dotglob globstar
-        printf '%s\0' **/* | LANG=C bsdtar -cnf - --format=mtree \
+        printf '%s\0' **/* | LANG=C bsdtar --uid 0 --gid 0 --uname root --gname wheel -cnf - --format=mtree \
             --options='!all,use-set,type,uid,gid,mode,time,size,sha256,link' \
             --null --files-from - --exclude .MTREE | gzip -c -f -n > .MTREE
     )
@@ -323,7 +323,7 @@ EOF
                     printf '%s\0' "$f"
                 fi
             done
-        ) | LANG=C bsdtar --no-fflags --no-read-sparse -cnf - --null --files-from - | \
+        ) | LANG=C bsdtar --no-fflags --no-read-sparse --uid 0 --gid 0 --uname root --gname wheel -cnf - --null --files-from - | \
             /opt/pacman/bin/zstd -c -T0 -19 -z > "${FINAL_PKG}"
     )
 
