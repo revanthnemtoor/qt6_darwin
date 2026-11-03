@@ -1,0 +1,11 @@
+# Build products and temporary files
+build/
+staging/
+logs/
+sources/
+*.pkg.tar.zst
+*.pkg.tar.xz
+*.pkg.tar.gz
+*.sig
+.DS_Store
+
