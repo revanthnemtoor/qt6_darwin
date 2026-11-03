@@ -57,3 +57,4 @@ if [[ ${FAILURES} -gt 0 ]]; then
 else
     echo -e "\n✓ ALL AUDITED BINARIES PASSED CLEANLY."
 fi
+

@@ -69,3 +69,4 @@ find "${STAGING_DIR}" -type f -exec sh -c '
 ' _ {} \;
 
 echo "Build, staging, and codesigning completed successfully!"
+
