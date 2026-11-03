@@ -6,7 +6,7 @@ pkgdesc="A cross-platform application and UI framework (core libraries for Darwi
 arch=('darwin_x86_64' 'darwin_arm64')
 url="https://www.qt.io"
 license=('LGPL-3.0-only' 'GPL-2.0-only' 'GPL-3.0-only')
-depends=('openssl' 'pcre2')
+depends=('openssl' 'pcre2' 'zstd')
 options=('!strip')
 source=("https://download.qt.io/official_releases/qt/6.12/${pkgver}/submodules/qtbase-everywhere-src-${pkgver}.tar.xz")
 sha256sums=('a951bd163c7b80fc6b8c88d7668fb56abf91c152373e13c10666763238131307')
@@ -19,7 +19,7 @@ build() {
     *)      _arch="$(uname -m)" ;;
   esac
 
-  # Ensure MacPorts/Homebrew headers and libraries are NOT in standard search paths
+  # Strictly isolate build from MacPorts and Homebrew runtime paths
   export PKG_CONFIG_PATH="/opt/pacman/lib/pkgconfig"
   export PATH="/opt/pacman/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -27,7 +27,9 @@ build() {
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/pacman \
     -DCMAKE_OSX_ARCHITECTURES="${_arch}" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 \
     -DCMAKE_PREFIX_PATH=/opt/pacman \
+    -DCMAKE_IGNORE_PREFIX_PATH="/opt/local;/usr/local" \
     -DINSTALL_BINDIR=bin \
     -DINSTALL_LIBDIR=lib \
     -DINSTALL_INCLUDEDIR=include/qt6 \
@@ -40,6 +42,7 @@ build() {
     -DINPUT_doubleconversion=qt \
     -DINPUT_sqlite=qt \
     -DFEATURE_framework=OFF \
+    -DFEATURE_relocatable=ON \
     -DBUILD_TESTING=OFF \
     -DBUILD_EXAMPLES=OFF
 
@@ -49,9 +52,8 @@ build() {
 package() {
   DESTDIR="${pkgdir}" cmake --install build
 
-  # Ad-hoc sign all Mach-O binaries and shared libraries
+  # Ad-hoc sign all Mach-O executables, dylibs, and plugins
   find "${pkgdir}" -type f -exec sh -c '
     file "$1" | grep -q "Mach-O" && codesign --sign - --force "$1" 2>/dev/null || true
   ' _ {} \;
 }
-
