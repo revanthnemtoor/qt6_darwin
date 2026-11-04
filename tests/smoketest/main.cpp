@@ -101,6 +101,24 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // Regression test for QAppleIconEngine (SIGFPE on QSize(0,0) and null icon handling)
+    QIcon missingThemeIcon = QIcon::fromTheme("nonexistent-kde-breeze-icon");
+    if (!missingThemeIcon.availableSizes().isEmpty() ||
+        !missingThemeIcon.actualSize(QSize(0, 0)).isEmpty() ||
+        !missingThemeIcon.actualSize(QSize(22, 22)).isEmpty() ||
+        !missingThemeIcon.pixmap(QSize(0, 0)).isNull() ||
+        !missingThemeIcon.pixmap(QSize(22, 22)).isNull()) {
+        std::cerr << "ERROR: Null QAppleIconEngine should return empty sizes/pixmaps!" << std::endl;
+        return 1;
+    }
+    QIcon validThemeIcon = QIcon::fromTheme("document-open");
+    if (!validThemeIcon.actualSize(QSize(0, 0)).isEmpty() ||
+        !validThemeIcon.pixmap(QSize(0, 0)).isNull()) {
+        std::cerr << "ERROR: QAppleIconEngine with QSize(0,0) should return empty QSize/QPixmap without SIGFPE!" << std::endl;
+        return 1;
+    }
+    std::cout << "  - QAppleIconEngine zero-size & null theme icon guard: PASS" << std::endl;
+
     // 2. Developer Toolchain Verification (moc, rcc, uic, lupdate, lrelease, qml, balsam, cooker)
     std::cout << "[2] Developer Toolchain Verification (/opt/pacman/bin):" << std::endl;
     MocSignalTester mocTester;

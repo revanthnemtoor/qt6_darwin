@@ -1,0 +1,1139 @@
+-------------------------------------
+Translated Report (Full Report Below)
+-------------------------------------
+
+Process:               gwenview [4551]
+Path:                  /opt/pacman/*/gwenview.app/Contents/MacOS/gwenview
+Identifier:            org.kde.gwenview
+Version:               26.08 (26.08.2)
+Code Type:             X86-64 (Native)
+Parent Process:        launchd [1]
+User ID:               501
+
+Date/Time:             2026-11-05 02:55:06.8608 +0530
+OS Version:            macOS 15.8.2 (24H232)
+Report Version:        12
+Bridge OS Version:     11.0 (24P6005)
+Anonymous UUID:        CF5519C0-A7AE-FDC3-7AFD-0A4F84C45511
+
+Sleep/Wake UUID:       3E8D407A-7EE0-4ED0-B112-B5E8225F5AF0
+
+Time Awake Since Boot: 310000 seconds
+Time Since Wake:       11301 seconds
+
+System Integrity Protection: enabled
+
+Crashed Thread:        0  Dispatch queue: com.apple.main-thread
+
+Exception Type:        EXC_ARITHMETIC (SIGFPE)
+Exception Codes:       0x0000000000000001, 0x0000000000000000
+
+Termination Reason:    Namespace SIGNAL, Code 8 Floating point exception: 8
+Terminating Process:   exc handler [4551]
+
+Thread 0 Crashed::  Dispatch queue: com.apple.main-thread
+0   libQt6Gui.6.12.0.dylib        	       0x10d122bd4 QAppleIconEngine::actualSize(QSize const&, QIcon::Mode, QIcon::State) + 100
+1   ???                           	0x4033000000000000 ???
+2   libQt6Gui.6.12.0.dylib        	       0x10d122d9b QAppleIconEngine::scaledPixmap(QSize const&, QIcon::Mode, QIcon::State, double) + 315
+3   libQt6Gui.6.12.0.dylib        	       0x10ccd1ceb QProxyIconEngine::scaledPixmap(QSize const&, QIcon::Mode, QIcon::State, double) + 75
+4   libQt6Gui.6.12.0.dylib        	       0x10cccb090 QIcon::pixmap(QSize const&, double, QIcon::Mode, QIcon::State) const + 128
+5   libqmacstyle.dylib            	       0x10ba1950f QMacStyle::drawControl(QStyle::ControlElement, QStyleOption const*, QPainter*, QWidget const*) const + 12879
+6   AppKit                        	    0x7ff80d5bc215 +[NSAppearance _performWithCurrentAppearance:usingBlock:] + 68
+7   libqmacstyle.dylib            	       0x10ba25d9f QMacApperanceStyle<QMacStyle, QStyleOption, QStyleOptionComplex>::drawControl(QStyle::ControlElement, QStyleOption const*, QPainter*, QWidget const*) const + 159
+8   libqmacstyle.dylib            	       0x10ba205a8 QMacStyle::drawComplexControl(QStyle::ComplexControl, QStyleOptionComplex const*, QPainter*, QWidget const*) const + 7640
+9   AppKit                        	    0x7ff80d5bc215 +[NSAppearance _performWithCurrentAppearance:usingBlock:] + 68
+10  libqmacstyle.dylib            	       0x10ba25e6f QMacApperanceStyle<QMacStyle, QStyleOption, QStyleOptionComplex>::drawComplexControl(QStyle::ComplexControl, QStyleOptionComplex const*, QPainter*, QWidget const*) const + 159
+11  libQt6Widgets.6.12.0.dylib    	       0x10bcd3d3e QToolButton::paintEvent(QPaintEvent*) + 270
+12  libQt6Widgets.6.12.0.dylib    	       0x10bac70c2 QWidget::event(QEvent*) + 2354
+13  libQt6Widgets.6.12.0.dylib    	       0x10bcd5ef1 QToolButton::event(QEvent*) + 321
+14  libQt6Widgets.6.12.0.dylib    	       0x10ba6e388 QApplicationPrivate::notify_helper(QObject*, QEvent*) + 312
+15  libQt6Widgets.6.12.0.dylib    	       0x10ba6f48e QApplication::notify(QObject*, QEvent*) + 526
+16  libQt6Core.6.12.0.dylib       	       0x10d833d05 QCoreApplication::sendSpontaneousEvent(QObject*, QEvent*) + 149
+17  libQt6Widgets.6.12.0.dylib    	       0x10bab5320 QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 3664
+18  libQt6Widgets.6.12.0.dylib    	       0x10babe425 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 1109
+19  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+20  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+21  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+22  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+23  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+24  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+25  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+26  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+27  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+28  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+29  libQt6Widgets.6.12.0.dylib    	       0x10bab4a9a QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 1482
+30  libQt6Widgets.6.12.0.dylib    	       0x10babe425 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 1109
+31  libQt6Widgets.6.12.0.dylib    	       0x10babe2b7 QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 743
+32  libQt6Widgets.6.12.0.dylib    	       0x10bab4a9a QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*) + 1482
+33  libQt6Widgets.6.12.0.dylib    	       0x10badb83e QWidgetRepaintManager::paintAndFlush() + 6430
+34  libQt6Widgets.6.12.0.dylib    	       0x10bad93c8 QWidgetRepaintManager::sync(QWidget*, QRegion const&) + 648
+35  libQt6Widgets.6.12.0.dylib    	       0x10bae1d9a QWidgetWindow::handleExposeEvent(QExposeEvent*) + 554
+36  libQt6Widgets.6.12.0.dylib    	       0x10badf1b9 QWidgetWindow::event(QEvent*) + 537
+37  libQt6Widgets.6.12.0.dylib    	       0x10ba6e388 QApplicationPrivate::notify_helper(QObject*, QEvent*) + 312
+38  libQt6Widgets.6.12.0.dylib    	       0x10ba6f48e QApplication::notify(QObject*, QEvent*) + 526
+39  libQt6Core.6.12.0.dylib       	       0x10d833d05 QCoreApplication::sendSpontaneousEvent(QObject*, QEvent*) + 149
+40  libQt6Gui.6.12.0.dylib        	       0x10cd57fcb QGuiApplicationPrivate::processExposeEvent(QWindowSystemInterfacePrivate::ExposeEvent*) + 571
+41  libQt6Gui.6.12.0.dylib        	       0x10cdc7590 bool QWindowSystemHelper<QWindowSystemInterface::SynchronousDelivery>::handleEvent<QWindowSystemInterfacePrivate::ExposeEvent, QWindow*, QRegion>(QWindow*, QRegion) + 272
+42  libQt6Gui.6.12.0.dylib        	       0x10cdc322b bool QWindowSystemInterface::handleExposeEvent<QWindowSystemInterface::SynchronousDelivery>(QWindow*, QRegion const&) + 75
+43  libqcocoa.dylib               	       0x10b91c969 QCocoaWindow::handleExposeEvent(QRegion const&) + 617
+44  libqcocoa.dylib               	       0x10b933112 -[QNSView(Drawing) displayLayer:]::$_1::operator()() const + 786
+45  libqcocoa.dylib               	       0x10b932c0f -[QNSView(Drawing) displayLayer:] + 1919
+46  QuartzCore                    	    0x7ff812d9c7a9 -[CALayer display] + 184
+47  QuartzCore                    	    0x7ff812d9c039 CA::Layer::display_if_needed(CA::Transaction*) + 841
+48  QuartzCore                    	    0x7ff812f427e7 CA::Context::commit_transaction(CA::Transaction*, double, double*) + 769
+49  QuartzCore                    	    0x7ff812d7bf6d CA::Transaction::commit() + 719
+50  AppKit                        	    0x7ff80d7221c1 __62+[CATransaction(NSCATransaction) NS_setFlushesWithDisplayLink]_block_invoke + 289
+51  AppKit                        	    0x7ff80e27721e ___NSRunLoopObserverCreateWithHandler_block_invoke + 41
+52  CoreFoundation                	    0x7ff809b6783d __CFRUNLOOP_IS_CALLING_OUT_TO_AN_OBSERVER_CALLBACK_FUNCTION__ + 23
+53  CoreFoundation                	    0x7ff809b67759 __CFRunLoopDoObservers + 511
+54  CoreFoundation                	    0x7ff809b66cf8 __CFRunLoopRun + 911
+55  CoreFoundation                	    0x7ff809b66332 CFRunLoopRunSpecific + 536
+56  HIToolbox                     	    0x7ff81565e0d4 RunCurrentEventLoopInMode + 281
+57  HIToolbox                     	    0x7ff815660e60 ReceiveNextEventCommon + 188
+58  HIToolbox                     	    0x7ff8157ea19a _BlockUntilNextEventMatchingListInModeWithFilter + 63
+59  AppKit                        	    0x7ff80d5cedc1 _DPSNextEvent + 912
+60  AppKit                        	    0x7ff80e05cc17 -[NSApplication(NSEventRouting) _nextEventMatchingEventMask:untilDate:inMode:dequeue:] + 1263
+61  AppKit                        	    0x7ff80d5bfea9 -[NSApplication run] + 610
+62  libqcocoa.dylib               	       0x10b8e2d55 QCocoaEventDispatcher::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) + 2453
+63  libQt6Core.6.12.0.dylib       	       0x10d83cd56 QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) + 550
+64  libQt6Core.6.12.0.dylib       	       0x10d83393f QCoreApplication::exec() + 207
+65  gwenview                      	       0x10929bb23 main + 3491
+66  dyld                          	    0x7ff8096d8530 start + 3056
+
+Thread 1:
+0   libsystem_pthread.dylib       	    0x7ff809a79834 start_wqthread + 0
+
+Thread 2:
+0   libsystem_pthread.dylib       	    0x7ff809a79834 start_wqthread + 0
+
+Thread 3:
+0   libsystem_pthread.dylib       	    0x7ff809a79834 start_wqthread + 0
+
+Thread 4:
+0   libsystem_pthread.dylib       	    0x7ff809a79834 start_wqthread + 0
+
+Thread 5:: Gwenview::ThumbnailGenerator
+0   libsystem_kernel.dylib        	    0x7ff809a3e6f6 __psynch_cvwait + 10
+1   libsystem_pthread.dylib       	    0x7ff809a7e2ae _pthread_cond_wait + 988
+2   libQt6Core.6.12.0.dylib       	       0x10da1085b QWaitConditionPrivate::wait(QDeadlineTimer) + 75
+3   libQt6Core.6.12.0.dylib       	       0x10da107ad QWaitCondition::wait(QMutex*, QDeadlineTimer) + 77
+4   libgwenviewlib.4.97.0.dylib   	       0x109635092 Gwenview::ThumbnailGenerator::run() + 386
+5   libQt6Core.6.12.0.dylib       	       0x10da08689 QThreadPrivate::start(void*) + 393
+6   libsystem_pthread.dylib       	    0x7ff809a7de05 _pthread_start + 115
+7   libsystem_pthread.dylib       	    0x7ff809a79857 thread_start + 15
+
+Thread 6:: QDBusConnectionManager
+0   libsystem_kernel.dylib        	    0x7ff809a428f2 poll + 10
+1   libQt6Core.6.12.0.dylib       	       0x10da06bff qt_safe_poll(pollfd*, unsigned int, QDeadlineTimer) + 79
+2   libQt6Core.6.12.0.dylib       	       0x10da0b0b1 QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) + 1185
+3   libQt6Core.6.12.0.dylib       	       0x10d83cd56 QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) + 550
+4   libQt6Core.6.12.0.dylib       	       0x10d94673a QThread::exec() + 298
+5   libQt6DBus.6.12.0.dylib       	       0x10b4027ba QDBusConnectionManager::run() + 26
+6   libQt6Core.6.12.0.dylib       	       0x10da08689 QThreadPrivate::start(void*) + 393
+7   libsystem_pthread.dylib       	    0x7ff809a7de05 _pthread_start + 115
+8   libsystem_pthread.dylib       	    0x7ff809a79857 thread_start + 15
+
+Thread 7:: Gwenview::ThumbnailGenerator
+0   libsystem_kernel.dylib        	    0x7ff809a3e6f6 __psynch_cvwait + 10
+1   libsystem_pthread.dylib       	    0x7ff809a7e2ae _pthread_cond_wait + 988
+2   libQt6Core.6.12.0.dylib       	       0x10da1085b QWaitConditionPrivate::wait(QDeadlineTimer) + 75
+3   libQt6Core.6.12.0.dylib       	       0x10da107ad QWaitCondition::wait(QMutex*, QDeadlineTimer) + 77
+4   libgwenviewlib.4.97.0.dylib   	       0x109635092 Gwenview::ThumbnailGenerator::run() + 386
+5   libQt6Core.6.12.0.dylib       	       0x10da08689 QThreadPrivate::start(void*) + 393
+6   libsystem_pthread.dylib       	    0x7ff809a7de05 _pthread_start + 115
+7   libsystem_pthread.dylib       	    0x7ff809a79857 thread_start + 15
+
+
+Thread 0 crashed with X86 Thread State (64-bit):
+  rax: 0x0000000000000000  rbx: 0x00007ff7b6c98ac0  rcx: 0x0000000000000001  rdx: 0x0000000000000000
+  rdi: 0x0000600003b77ca0  rsi: 0x00007ff82903acd1  rbp: 0x00007ff7b6c98620  rsp: 0x00007ff7b6c985f0
+   r8: 0x00000000fd25d145   r9: 0x00000000000001ff  r10: 0x00007ff84b49c440  r11: 0x00007ff80d5ab9de
+  r12: 0x00007ff8096920c0  r13: 0xaaaaaaaaaaaaaaaa  r14: 0x00006000004da3d0  r15: 0x00007ff82903acd1
+  rip: 0x000000010d122bd4  rfl: 0x0000000000010206  cr2: 0x0000000000000000
+  
+Logical CPU:     6
+Error Code:      0x00000000 
+Trap Number:     0
+
+Thread 0 instruction stream:
+  55 48 89 e5 41 57 41 56-41 54 53 48 83 ec 10 48  UH..AWAVATSH...H
+  89 f3 49 89 fe 48 8b 07-ff 50 68 84 c0 74 0a f2  ..I..H...Ph..t..
+  0f 10 0d cd b2 2d 00 eb-34 49 8b 7e 20 4c 8b 3d  .....-..4I.~ L.=
+  c8 e5 39 00 4c 8b 25 99-f1 37 00 4c 89 fe 41 ff  ..9.L.%..7.L..A.
+  d4 f2 0f 11 45 d8 49 8b-7e 20 4c 89 fe 41 ff d4  ....E.I.~ L..A..
+  f2 0f 10 45 d8 f2 0f 5e-c1 66 0f 28 c8 8b 03 99  ...E...^.f.(....
+ [f7]7b 04 0f 57 c0 f2 0f-2a c0 48 8b 0b 66 0f 2e  .{..W...*.H..f..	<==
+  c1 76 15 48 c1 e9 20 0f-57 c0 f2 0f 2a c1 f2 0f  .v.H.. .W...*...
+  59 c8 f2 0f 2c c1 eb 11-89 c8 0f 57 c0 f2 0f 2a  Y...,......W...*
+  c1 f2 0f 5e c1 f2 0f 2c-c8 48 c1 e1 20 89 c0 48  ...^...,.H.. ..H
+  09 c8 48 83 c4 10 5b 41-5c 41 5e 41 5f 5d c3 66  ..H...[A\A^A_].f
+  66 66 66 2e 0f 1f 84 00-00 00 00 00 f3 0f 1e fa  fff.............
+
+Binary Images:
+       0x109261000 -        0x1092c9fff org.kde.gwenview (26.08) <5359f2ab-19e0-394c-a53a-36a69816370f> /opt/pacman/*/gwenview.app/Contents/MacOS/gwenview
+       0x109390000 -        0x1093c9fff libKF6ItemModels.6.31.0.dylib (*) <0b1b9430-704b-355d-a66d-1eefd18feeca> /opt/pacman/*/libKF6ItemModels.6.31.0.dylib
+       0x1095ad000 -        0x109690fff libgwenviewlib.4.97.0.dylib (*) <10704f87-96bb-3100-8deb-5fe8e6bcf12a> /opt/pacman/*/libgwenviewlib.4.97.0.dylib
+       0x10933f000 -        0x109346fff libQt6MultimediaWidgets.6.12.0.dylib (*) <4cd70cac-04d5-39d1-9055-fb08fb229030> /opt/pacman/*/libQt6MultimediaWidgets.6.12.0.dylib
+       0x109957000 -        0x109a65fff libQt6Multimedia.6.12.0.dylib (*) <4ae7e5d5-1268-33ac-bc73-b6a0875149c8> /opt/pacman/*/libQt6Multimedia.6.12.0.dylib
+       0x109763000 -        0x109821fff libKF6KIOFileWidgets.6.31.0.dylib (*) <4eecc00d-d0d2-3ba5-ac18-6e36f33832c2> /opt/pacman/*/libKF6KIOFileWidgets.6.31.0.dylib
+       0x109b4e000 -        0x109c06fff libKF6KIOWidgets.6.31.0.dylib (*) <cc7697b2-8437-3837-937f-1ee15d7a940f> /opt/pacman/*/libKF6KIOWidgets.6.31.0.dylib
+       0x10946b000 -        0x1094a5fff libKF6KIOGui.6.31.0.dylib (*) <41f7db8c-68b8-38fb-b8d9-eec0bd5d7202> /opt/pacman/*/libKF6KIOGui.6.31.0.dylib
+       0x109355000 -        0x109358fff libQt6Concurrent.6.12.0.dylib (*) <ae8adb56-c5d4-3d46-9c5c-5d9eee27684e> /opt/pacman/*/libQt6Concurrent.6.12.0.dylib
+       0x109e41000 -        0x109f47fff libKF6KIOCore.6.31.0.dylib (*) <edb86fe5-ad34-3009-90f9-f72bcea56cad> /opt/pacman/*/libKF6KIOCore.6.31.0.dylib
+       0x109363000 -        0x10936cfff libKF6Crash.6.31.0.dylib (*) <9651c75d-0013-3963-aa4b-1437342238e8> /opt/pacman/*/libKF6Crash.6.31.0.dylib
+       0x10942d000 -        0x109444fff libKF6JobWidgets.6.31.0.dylib (*) <bb5fc2af-eacf-3077-ae38-cf0e2f6ad152> /opt/pacman/*/libKF6JobWidgets.6.31.0.dylib
+       0x1098b1000 -        0x109901fff libKF6Service.6.31.0.dylib (*) <21dd2441-9984-3765-bd4d-9387e7e3325d> /opt/pacman/*/libKF6Service.6.31.0.dylib
+       0x109524000 -        0x109545fff libKF6Completion.6.31.0.dylib (*) <40e1777c-a1a0-3ef9-aac6-a9012197f91f> /opt/pacman/*/libKF6Completion.6.31.0.dylib
+       0x109d4f000 -        0x109da3fff libKF6Solid.6.31.0.dylib (*) <2d63a1b4-ab05-335d-a9f9-3f2b2f2563ae> /opt/pacman/*/libKF6Solid.6.31.0.dylib
+       0x1094de000 -        0x1094f0fff libKF6Bookmarks.6.31.0.dylib (*) <14ddf9c2-fa13-3fbb-be65-a6e051b750e5> /opt/pacman/*/libKF6Bookmarks.6.31.0.dylib
+       0x109507000 -        0x109510fff libKF6WindowSystem.6.31.0.dylib (*) <643a39a6-5409-39a2-8e44-7fa5055cd686> /opt/pacman/*/libKF6WindowSystem.6.31.0.dylib
+       0x10a0ca000 -        0x10a14efff libKF6XmlGui.6.31.0.dylib (*) <b64f9239-e840-3651-bfd5-3a4106e8c78d> /opt/pacman/*/libKF6XmlGui.6.31.0.dylib
+       0x109fe3000 -        0x10a02cfff libQt6PrintSupport.6.12.0.dylib (*) <29650439-40ae-3150-ba79-639310355ef9> /opt/pacman/*/libQt6PrintSupport.6.12.0.dylib
+       0x10a3e1000 -        0x10a536fff libQt6Network.6.12.0.dylib (*) <ce5729df-6e94-3cd5-a213-903719f27d59> /opt/pacman/*/libQt6Network.6.12.0.dylib
+       0x10a1b4000 -        0x10a1dffff libKF6ItemViews.6.31.0.dylib (*) <17297777-3b2e-3da4-a038-144b8a0ad7f4> /opt/pacman/*/libKF6ItemViews.6.31.0.dylib
+       0x10956a000 -        0x109586fff libQt6Xml.6.12.0.dylib (*) <0560e380-a630-35aa-bf23-d744fd2dfc77> /opt/pacman/*/libQt6Xml.6.12.0.dylib
+       0x10a214000 -        0x10a248fff libKF6ConfigWidgets.6.31.0.dylib (*) <1bb231cf-64bf-389e-9dbc-0e98af8b8ced> /opt/pacman/*/libKF6ConfigWidgets.6.31.0.dylib
+       0x10a612000 -        0x10a6bdfff libKF6CoreAddons.6.31.0.dylib (*) <5b4c8dd3-b9a2-33de-84f9-0d05ec19ab4b> /opt/pacman/*/libKF6CoreAddons.6.31.0.dylib
+       0x10aa56000 -        0x10ac5bfff libexiv2.0.28.9.dylib (*) <e77af77f-947e-34e1-bf3d-1cbefc253924> /opt/pacman/*/libexiv2.0.28.9.dylib
+       0x10a725000 -        0x10a7e9fff libjpeg.8.3.2.dylib (*) <876c04a3-56df-3005-856b-673c25abc1af> /opt/pacman/*/libjpeg.8.3.2.dylib
+       0x109cde000 -        0x109d0efff libpng16.16.59.0.dylib (*) <77058f73-b011-3578-9e3f-22c5add6f919> /opt/pacman/*/libpng16.16.59.0.dylib
+       0x109929000 -        0x10993afff libz.1.3.2.dylib (*) <0aea11c1-7e8b-3e66-b8df-cf4b04adabfa> /opt/pacman/*/libz.1.3.2.dylib
+       0x10a2f2000 -        0x10a349fff liblcms2.2.20.0.dylib (*) <ab3b366f-033e-31b9-a208-6cc860b81ad6> /opt/pacman/*/liblcms2.2.20.0.dylib
+       0x109411000 -        0x109419fff libQt6OpenGLWidgets.6.12.0.dylib (*) <5ee67310-7d41-37ce-a4fa-2a50a6f1cbf4> /opt/pacman/*/libQt6OpenGLWidgets.6.12.0.dylib
+       0x10a8bd000 -        0x10a92bfff libQt6OpenGL.6.12.0.dylib (*) <d01d6e99-65f7-3a44-8790-123de8413ccf> /opt/pacman/*/libQt6OpenGL.6.12.0.dylib
+       0x109d1c000 -        0x109d2bfff libKF6IconWidgets.6.31.0.dylib (*) <c4eca4f6-6e96-32a8-a850-a10cd25d4892> /opt/pacman/*/libKF6IconWidgets.6.31.0.dylib
+       0x10b030000 -        0x10b1e4fff libKF6WidgetsAddons.6.31.0.dylib (*) <aa22d546-df84-368e-8271-76ee0b72971d> /opt/pacman/*/libKF6WidgetsAddons.6.31.0.dylib
+       0x10a070000 -        0x10a096fff libKF6IconThemes.6.31.0.dylib (*) <316adbbd-8218-3a1f-a9c8-180224874fc1> /opt/pacman/*/libKF6IconThemes.6.31.0.dylib
+       0x109dff000 -        0x109e0ffff libKF6ColorScheme.6.31.0.dylib (*) <fe38f981-15f3-341f-a1f0-355824951984> /opt/pacman/*/libKF6ColorScheme.6.31.0.dylib
+       0x10a364000 -        0x10a381fff libKF6GuiAddons.6.31.0.dylib (*) <ea41fad2-7d41-3ab3-b45d-718e99f16296> /opt/pacman/*/libKF6GuiAddons.6.31.0.dylib
+       0x10a80b000 -        0x10a82afff libKF6ConfigGui.6.31.0.dylib (*) <5713d070-45d3-3388-9f3b-8031ad1aea71> /opt/pacman/*/libKF6ConfigGui.6.31.0.dylib
+       0x10ad8d000 -        0x10ade8fff libKF6I18n.6.31.0.dylib (*) <09125070-3d5e-3cc1-926a-8b55536aede2> /opt/pacman/*/libKF6I18n.6.31.0.dylib
+       0x10ae0a000 -        0x10ae63fff libKF6ConfigCore.6.31.0.dylib (*) <89622d25-fdbf-3159-a84a-b1d1c46356ed> /opt/pacman/*/libKF6ConfigCore.6.31.0.dylib
+       0x10937b000 -        0x109381fff libQt6SvgWidgets.6.12.0.dylib (*) <e4760179-958b-3e76-b1e5-29b4bcac99cb> /opt/pacman/*/libQt6SvgWidgets.6.12.0.dylib
+       0x10ba61000 -        0x10bf6ffff libQt6Widgets.6.12.0.dylib (*) <9b6a13f2-47e5-3fc9-81c0-c364cbe8d632> /opt/pacman/*/libQt6Widgets.6.12.0.dylib
+       0x10aec7000 -        0x10af33fff libQt6Svg.6.12.0.dylib (*) <3635750f-a0d6-35cc-811c-b424caae0ce8> /opt/pacman/*/libQt6Svg.6.12.0.dylib
+       0x10ccb6000 -        0x10d49efff libQt6Gui.6.12.0.dylib (*) <08713bd3-c54d-3777-a87b-5a6f83a01984> /opt/pacman/*/libQt6Gui.6.12.0.dylib
+       0x10b3e3000 -        0x10b477fff libQt6DBus.6.12.0.dylib (*) <6e8afb85-4d66-3945-a9e5-9d9e85a65733> /opt/pacman/*/libQt6DBus.6.12.0.dylib
+       0x10d789000 -        0x10dc99fff libQt6Core.6.12.0.dylib (*) <8d955d11-f3d7-34d8-a380-ab762f0f2a89> /opt/pacman/*/libQt6Core.6.12.0.dylib
+       0x10af75000 -        0x10b008fff libtiff.6.3.0.dylib (*) <e150a084-b3c3-3951-902f-88096e6cee02> /opt/pacman/*/libtiff.6.3.0.dylib
+       0x10b2d5000 -        0x10b356fff libpcre2-16.0.dylib (*) <7289d0f2-c95e-3eb2-bde9-925a0f1a0dcf> /opt/pacman/*/libpcre2-16.0.dylib
+       0x10b4f3000 -        0x10b58afff libssl.3.dylib (*) <b8fb4d89-43c0-36dc-88af-c97b69b75031> /opt/pacman/*/libssl.3.dylib
+       0x10c6f7000 -        0x10ca66fff libcrypto.3.dylib (*) <07705225-76f6-3e86-9223-4af39b63918b> /opt/pacman/*/libcrypto.3.dylib
+       0x10b5d5000 -        0x10b677fff libzstd.1.5.7.dylib (*) <f5561eb7-9efb-3f95-9aa8-06842431c4bd> /opt/pacman/*/libzstd.1.5.7.dylib
+       0x10a283000 -        0x10a292fff libKF6BookmarksWidgets.6.31.0.dylib (*) <79bc3cf5-d405-3249-9875-fc414129397e> /opt/pacman/*/libKF6BookmarksWidgets.6.31.0.dylib
+       0x10a2aa000 -        0x10a2d2fff libintl.8.dylib (*) <58c8bdf7-78f4-39df-88b8-22a220223901> /opt/pacman/*/libintl.8.dylib
+       0x10a3a5000 -        0x10a3befff libKF6Notifications.6.31.0.dylib (*) <fe685011-bc15-3bcf-ae06-8d271076ed08> /opt/pacman/*/libKF6Notifications.6.31.0.dylib
+       0x10a971000 -        0x10a9abfff libKF6Codecs.6.31.0.dylib (*) <8b631654-50e8-3491-bd10-077b39061bf3> /opt/pacman/*/libKF6Codecs.6.31.0.dylib
+       0x10b365000 -        0x10b3affff libKF6Archive.6.31.0.dylib (*) <c4af2cb1-3fa9-3f79-88fa-ab0bfd0b1f36> /opt/pacman/*/libKF6Archive.6.31.0.dylib
+       0x10a855000 -        0x10a873fff libexpat.1.12.3.dylib (*) <653c12b3-7a7a-373e-bd18-7c07d79511b3> /opt/pacman/*/libexpat.1.12.3.dylib
+       0x10b8cb000 -        0x10b985fff libqcocoa.dylib (*) <12558130-df8a-3128-a2b2-669403447b60> /opt/pacman/*/libqcocoa.dylib
+       0x10b859000 -        0x10b865fff libobjc-trampolines.dylib (*) <030461fd-a024-364c-adf1-48145784cf32> /usr/lib/libobjc-trampolines.dylib
+       0x10ba05000 -        0x10ba2cfff libqmacstyle.dylib (*) <0f408f76-aafc-3321-996c-dd48684e83dc> /opt/pacman/*/libqmacstyle.dylib
+       0x10c635000 -        0x10c63cfff libqgif.dylib (*) <54391b13-7779-3495-ad01-b2774c9f9c7c> /opt/pacman/*/libqgif.dylib
+       0x10c647000 -        0x10c64bfff libqwbmp.dylib (*) <96793a2a-5b88-3683-9223-ad5aff35633c> /opt/pacman/*/libqwbmp.dylib
+       0x11b869000 -        0x11b8f8fff libqwebp.dylib (*) <3a75cb83-c71a-3211-be12-923e5a5565b8> /opt/pacman/*/libqwebp.dylib
+       0x10c656000 -        0x10c65cfff libqico.dylib (*) <17b9a254-904c-3e17-bf6b-0b13cf8e905a> /opt/pacman/*/libqico.dylib
+       0x10c67a000 -        0x10c681fff libqmacheif.dylib (*) <428f8581-c948-321f-ac45-e4ebf9be7740> /opt/pacman/*/libqmacheif.dylib
+       0x11b911000 -        0x11b9a5fff libqjpeg.dylib (*) <220c2588-99c8-3143-a307-b7ecf1490a51> /opt/pacman/*/libqjpeg.dylib
+       0x11badc000 -        0x11bbdbfff libqtiff.dylib (*) <de24334a-dfe7-31ba-a689-6a1105ac42e9> /opt/pacman/*/libqtiff.dylib
+       0x10c667000 -        0x10c66cfff libqsvg.dylib (*) <8993b2d9-7878-339a-8445-27307bfa2b71> /opt/pacman/*/libqsvg.dylib
+       0x10c6a3000 -        0x10c6abfff libqicns.dylib (*) <3b9b10e9-f3c4-3b19-a146-0c4f7b6fd1f8> /opt/pacman/*/libqicns.dylib
+       0x10c690000 -        0x10c694fff libqtga.dylib (*) <dc86cb00-41df-31e1-b884-4be1795874e8> /opt/pacman/*/libqtga.dylib
+       0x10c6c9000 -        0x10c6d0fff libqmacjp2.dylib (*) <86ee7561-598a-38cf-bcbe-04a78691a8e4> /opt/pacman/*/libqmacjp2.dylib
+               0x0 - 0xffffffffffffffff ??? (*) <00000000-0000-0000-0000-000000000000> ???
+    0x7ff80d58f000 -     0x7ff80eadfc13 com.apple.AppKit (6.9) <4f8e63a0-45ab-396d-a3bb-2d51b3abe2c4> /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit
+    0x7ff812d7a000 -     0x7ff81312711d com.apple.QuartzCore (1.11) <bbbb7b0f-8559-32d1-aad1-b88d54bfb865> /System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore
+    0x7ff809aec000 -     0x7ff809fa1fe2 com.apple.CoreFoundation (6.9) <d23a9d3b-a476-3d45-a6ab-e4df1eeda35b> /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation
+    0x7ff8155b6000 -     0x7ff8158976ed com.apple.HIToolbox (2.1.1) <8b74c94f-3fc3-31d1-9973-1c72e9b6a437> /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox
+    0x7ff8096d2000 -     0x7ff80976c6e7 dyld (*) <8b636e0c-5b59-33d2-8753-547c3a7fa74f> /usr/lib/dyld
+    0x7ff80968c000 -     0x7ff8096d105b libobjc.A.dylib (*) <88aa23bf-f45d-3a23-960d-8c093783c3dc> /usr/lib/libobjc.A.dylib
+    0x7ff809a78000 -     0x7ff809a83fd7 libsystem_pthread.dylib (*) <2410dcd3-4d92-30b2-96ec-4bd6f78139d4> /usr/lib/system/libsystem_pthread.dylib
+    0x7ff809a3b000 -     0x7ff809a77b1f libsystem_kernel.dylib (*) <42669b25-d200-3f98-924a-47c1135d8bf4> /usr/lib/system/libsystem_kernel.dylib
+
+External Modification Summary:
+  Calls made by other processes targeting this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+  Calls made by this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+  Calls made by all processes on this machine:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+
+VM Region Summary:
+ReadOnly portion of Libraries: Total=1.3G resident=0K(0%) swapped_out_or_unallocated=1.3G(100%)
+Writable regions: Total=657.8M written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=657.8M(100%)
+
+                                VIRTUAL   REGION 
+REGION TYPE                        SIZE    COUNT (non-coalesced) 
+===========                     =======  ======= 
+Accelerate framework               128K        1 
+Activity Tracing                   256K        1 
+CG image                           120K        9 
+CG raster data                      72K        6 
+ColorSync                          232K       27 
+CoreUI image data                  304K        2 
+Foundation                          16K        1 
+Kernel Alloc Once                    8K        1 
+MALLOC                           645.5M       86 
+MALLOC guard page                   48K       12 
+STACK GUARD                       56.0M        8 
+Stack                             11.6M        8 
+VM_ALLOCATE                         96K        9 
+__CTF                               824        1 
+__DATA                            32.7M      989 
+__DATA_CONST                     102.4M     1002 
+__DATA_DIRTY                      2575K      335 
+__FONT_DATA                        2352        1 
+__INFO_FILTER                         8        1 
+__LINKEDIT                       182.5M       71 
+__OBJC_RO                         61.3M        1 
+__OBJC_RW                         2396K        2 
+__TEXT                             1.1G     1012 
+__TEXT (graphics)                 3000K        7 
+__TPRO_CONST                         16        2 
+dyld private memory                128K        1 
+mapped file                      223.2M       29 
+shared memory                     1308K       18 
+===========                     =======  ======= 
+TOTAL                              2.4G     3643 
+
+
+
+-----------
+Full Report
+-----------
+
+{"app_name":"gwenview","timestamp":"2026-11-05 02:55:09.00 +0530","app_version":"26.08","slice_uuid":"5359f2ab-19e0-394c-a53a-36a69816370f","build_version":"26.08.2","platform":1,"bundleID":"org.kde.gwenview","share_with_app_devs":0,"is_first_party":0,"bug_type":"309","os_version":"macOS 15.8.2 (24H232)","roots_installed":0,"name":"gwenview","incident_id":"3E7FC40C-3156-49AA-9507-82EFFCB92FE0"}
+{
+  "uptime" : 310000,
+  "procRole" : "Foreground",
+  "version" : 2,
+  "userID" : 501,
+  "deployVersion" : 210,
+  "modelCode" : "MacBookPro15,1",
+  "coalitionID" : 76070,
+  "osVersion" : {
+    "train" : "macOS 15.8.2",
+    "build" : "24H232",
+    "releaseType" : "User"
+  },
+  "captureTime" : "2026-11-05 02:55:06.8608 +0530",
+  "codeSigningMonitor" : 0,
+  "incident" : "3E7FC40C-3156-49AA-9507-82EFFCB92FE0",
+  "pid" : 4551,
+  "cpuType" : "X86-64",
+  "roots_installed" : 0,
+  "bug_type" : "309",
+  "procLaunch" : "2026-11-05 02:55:06.2473 +0530",
+  "procStartAbsTime" : 311943657157781,
+  "procExitAbsTime" : 311944270000090,
+  "procName" : "gwenview",
+  "procPath" : "\/opt\/pacman\/*\/gwenview.app\/Contents\/MacOS\/gwenview",
+  "bundleInfo" : {"CFBundleShortVersionString":"26.08","CFBundleVersion":"26.08.2","CFBundleIdentifier":"org.kde.gwenview"},
+  "storeInfo" : {"deviceIdentifierForVendor":"28A48D79-911E-5009-A26E-7DA0C811C63D","thirdParty":true},
+  "parentProc" : "launchd",
+  "parentPid" : 1,
+  "coalitionName" : "org.kde.gwenview",
+  "crashReporterKey" : "CF5519C0-A7AE-FDC3-7AFD-0A4F84C45511",
+  "appleIntelligenceStatus" : {"reasons":["deviceNotCapable"],"state":"unavailable"},
+  "codeSigningID" : "org.kde.gwenview",
+  "codeSigningTeamID" : "",
+  "codeSigningFlags" : 570425345,
+  "codeSigningValidationCategory" : 10,
+  "codeSigningTrustLevel" : 4294967295,
+  "codeSigningAuxiliaryInfo" : 0,
+  "bootSessionUUID" : "AE396175-1545-4E34-8386-899384C66134",
+  "wakeTime" : 11301,
+  "bridgeVersion" : {"build":"24P6005","train":"11.0"},
+  "sleepWakeUUID" : "3E8D407A-7EE0-4ED0-B112-B5E8225F5AF0",
+  "sip" : "enabled",
+  "exception" : {"codes":"0x0000000000000001, 0x0000000000000000","rawCodes":[1,0],"type":"EXC_ARITHMETIC","signal":"SIGFPE"},
+  "termination" : {"flags":0,"code":8,"namespace":"SIGNAL","indicator":"Floating point exception: 8","byProc":"exc handler","byPid":4551},
+  "extMods" : {"caller":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"system":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"targeted":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"warnings":0},
+  "faultingThread" : 0,
+  "threads" : [{"triggered":true,"id":5611831,"instructionState":{"instructionStream":{"bytes":[85,72,137,229,65,87,65,86,65,84,83,72,131,236,16,72,137,243,73,137,254,72,139,7,255,80,104,132,192,116,10,242,15,16,13,205,178,45,0,235,52,73,139,126,32,76,139,61,200,229,57,0,76,139,37,153,241,55,0,76,137,254,65,255,212,242,15,17,69,216,73,139,126,32,76,137,254,65,255,212,242,15,16,69,216,242,15,94,193,102,15,40,200,139,3,153,247,123,4,15,87,192,242,15,42,192,72,139,11,102,15,46,193,118,21,72,193,233,32,15,87,192,242,15,42,193,242,15,89,200,242,15,44,193,235,17,137,200,15,87,192,242,15,42,193,242,15,94,193,242,15,44,200,72,193,225,32,137,192,72,9,200,72,131,196,16,91,65,92,65,94,65,95,93,195,102,102,102,102,46,15,31,132,0,0,0,0,0,243,15,30,250],"offset":96}},"threadState":{"r13":{"value":12297829382473034410},"rax":{"value":0},"rflags":{"value":66054},"cpu":{"value":6},"r14":{"value":105553121354704},"rsi":{"value":140703816723665,"objc-selector":"size"},"r8":{"value":4247114053},"cr2":{"value":0},"rdx":{"value":0},"r10":{"value":140704391742528,"symbolLocation":0,"symbol":"OBJC_CLASS_$_NSImage"},"r9":{"value":511},"r15":{"value":140703816723665,"objc-selector":"size"},"rbx":{"value":140701900311232},"trap":{"value":0},"err":{"value":0},"r11":{"value":140703352666590,"symbolLocation":0,"symbol":"-[NSImage size]"},"rip":{"value":4514261972,"matchesCrashFrame":1},"rbp":{"value":140701900310048},"rsp":{"value":140701900310000},"r12":{"value":140703286501568,"symbolLocation":0,"symbol":"objc_msgSend"},"rcx":{"value":1},"flavor":"x86_THREAD_STATE","rdi":{"value":105553178623136}},"queue":"com.apple.main-thread","frames":[{"imageOffset":4639700,"symbol":"QAppleIconEngine::actualSize(QSize const&, QIcon::Mode, QIcon::State)","symbolLocation":100,"imageIndex":42},{"imageOffset":4626041242239631360,"imageIndex":70},{"imageOffset":4640155,"symbol":"QAppleIconEngine::scaledPixmap(QSize const&, QIcon::Mode, QIcon::State, double)","symbolLocation":315,"imageIndex":42},{"imageOffset":113899,"symbol":"QProxyIconEngine::scaledPixmap(QSize const&, QIcon::Mode, QIcon::State, double)","symbolLocation":75,"imageIndex":42},{"imageOffset":86160,"symbol":"QIcon::pixmap(QSize const&, double, QIcon::Mode, QIcon::State) const","symbolLocation":128,"imageIndex":42},{"imageOffset":83215,"symbol":"QMacStyle::drawControl(QStyle::ControlElement, QStyleOption const*, QPainter*, QWidget const*) const","symbolLocation":12879,"imageIndex":58},{"imageOffset":184853,"symbol":"+[NSAppearance _performWithCurrentAppearance:usingBlock:]","symbolLocation":68,"imageIndex":71},{"imageOffset":134559,"symbol":"QMacApperanceStyle<QMacStyle, QStyleOption, QStyleOptionComplex>::drawControl(QStyle::ControlElement, QStyleOption const*, QPainter*, QWidget const*) const","symbolLocation":159,"imageIndex":58},{"imageOffset":112040,"symbol":"QMacStyle::drawComplexControl(QStyle::ComplexControl, QStyleOptionComplex const*, QPainter*, QWidget const*) const","symbolLocation":7640,"imageIndex":58},{"imageOffset":184853,"symbol":"+[NSAppearance _performWithCurrentAppearance:usingBlock:]","symbolLocation":68,"imageIndex":71},{"imageOffset":134767,"symbol":"QMacApperanceStyle<QMacStyle, QStyleOption, QStyleOptionComplex>::drawComplexControl(QStyle::ComplexControl, QStyleOptionComplex const*, QPainter*, QWidget const*) const","symbolLocation":159,"imageIndex":58},{"imageOffset":2567486,"symbol":"QToolButton::paintEvent(QPaintEvent*)","symbolLocation":270,"imageIndex":40},{"imageOffset":417986,"symbol":"QWidget::event(QEvent*)","symbolLocation":2354,"imageIndex":40},{"imageOffset":2576113,"symbol":"QToolButton::event(QEvent*)","symbolLocation":321,"imageIndex":40},{"imageOffset":54152,"symbol":"QApplicationPrivate::notify_helper(QObject*, QEvent*)","symbolLocation":312,"imageIndex":40},{"imageOffset":58510,"symbol":"QApplication::notify(QObject*, QEvent*)","symbolLocation":526,"imageIndex":40},{"imageOffset":699653,"symbol":"QCoreApplication::sendSpontaneousEvent(QObject*, QEvent*)","symbolLocation":149,"imageIndex":44},{"imageOffset":344864,"symbol":"QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":3664,"imageIndex":40},{"imageOffset":381989,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":1109,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":342682,"symbol":"QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":1482,"imageIndex":40},{"imageOffset":381989,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":1109,"imageIndex":40},{"imageOffset":381623,"symbol":"QWidgetPrivate::paintSiblingsRecursive(QPaintDevice*, QList<QObject*> const&, int, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":743,"imageIndex":40},{"imageOffset":342682,"symbol":"QWidgetPrivate::drawWidget(QPaintDevice*, QRegion const&, QPoint const&, QFlags<QWidgetPrivate::DrawWidgetFlag>, QPainter*, QWidgetRepaintManager*)","symbolLocation":1482,"imageIndex":40},{"imageOffset":501822,"symbol":"QWidgetRepaintManager::paintAndFlush()","symbolLocation":6430,"imageIndex":40},{"imageOffset":492488,"symbol":"QWidgetRepaintManager::sync(QWidget*, QRegion const&)","symbolLocation":648,"imageIndex":40},{"imageOffset":527770,"symbol":"QWidgetWindow::handleExposeEvent(QExposeEvent*)","symbolLocation":554,"imageIndex":40},{"imageOffset":516537,"symbol":"QWidgetWindow::event(QEvent*)","symbolLocation":537,"imageIndex":40},{"imageOffset":54152,"symbol":"QApplicationPrivate::notify_helper(QObject*, QEvent*)","symbolLocation":312,"imageIndex":40},{"imageOffset":58510,"symbol":"QApplication::notify(QObject*, QEvent*)","symbolLocation":526,"imageIndex":40},{"imageOffset":699653,"symbol":"QCoreApplication::sendSpontaneousEvent(QObject*, QEvent*)","symbolLocation":149,"imageIndex":44},{"imageOffset":663499,"symbol":"QGuiApplicationPrivate::processExposeEvent(QWindowSystemInterfacePrivate::ExposeEvent*)","symbolLocation":571,"imageIndex":42},{"imageOffset":1119632,"symbol":"bool QWindowSystemHelper<QWindowSystemInterface::SynchronousDelivery>::handleEvent<QWindowSystemInterfacePrivate::ExposeEvent, QWindow*, QRegion>(QWindow*, QRegion)","symbolLocation":272,"imageIndex":42},{"imageOffset":1102379,"symbol":"bool QWindowSystemInterface::handleExposeEvent<QWindowSystemInterface::SynchronousDelivery>(QWindow*, QRegion const&)","symbolLocation":75,"imageIndex":42},{"imageOffset":334185,"symbol":"QCocoaWindow::handleExposeEvent(QRegion const&)","symbolLocation":617,"imageIndex":56},{"imageOffset":426258,"symbol":"-[QNSView(Drawing) displayLayer:]::$_1::operator()() const","symbolLocation":786,"imageIndex":56},{"imageOffset":424975,"symbol":"-[QNSView(Drawing) displayLayer:]","symbolLocation":1919,"imageIndex":56},{"imageOffset":141225,"symbol":"-[CALayer display]","symbolLocation":184,"imageIndex":72},{"imageOffset":139321,"symbol":"CA::Layer::display_if_needed(CA::Transaction*)","symbolLocation":841,"imageIndex":72},{"imageOffset":1869799,"symbol":"CA::Context::commit_transaction(CA::Transaction*, double, double*)","symbolLocation":769,"imageIndex":72},{"imageOffset":8045,"symbol":"CA::Transaction::commit()","symbolLocation":719,"imageIndex":72},{"imageOffset":1651137,"symbol":"__62+[CATransaction(NSCATransaction) NS_setFlushesWithDisplayLink]_block_invoke","symbolLocation":289,"imageIndex":71},{"imageOffset":13533726,"symbol":"___NSRunLoopObserverCreateWithHandler_block_invoke","symbolLocation":41,"imageIndex":71},{"imageOffset":505917,"symbol":"__CFRUNLOOP_IS_CALLING_OUT_TO_AN_OBSERVER_CALLBACK_FUNCTION__","symbolLocation":23,"imageIndex":73},{"imageOffset":505689,"symbol":"__CFRunLoopDoObservers","symbolLocation":511,"imageIndex":73},{"imageOffset":503032,"symbol":"__CFRunLoopRun","symbolLocation":911,"imageIndex":73},{"imageOffset":500530,"symbol":"CFRunLoopRunSpecific","symbolLocation":536,"imageIndex":73},{"imageOffset":688340,"symbol":"RunCurrentEventLoopInMode","symbolLocation":281,"imageIndex":74},{"imageOffset":700000,"symbol":"ReceiveNextEventCommon","symbolLocation":188,"imageIndex":74},{"imageOffset":2310554,"symbol":"_BlockUntilNextEventMatchingListInModeWithFilter","symbolLocation":63,"imageIndex":74},{"imageOffset":261569,"symbol":"_DPSNextEvent","symbolLocation":912,"imageIndex":71},{"imageOffset":11328535,"symbol":"-[NSApplication(NSEventRouting) _nextEventMatchingEventMask:untilDate:inMode:dequeue:]","symbolLocation":1263,"imageIndex":71},{"imageOffset":200361,"symbol":"-[NSApplication run]","symbolLocation":610,"imageIndex":71},{"imageOffset":97621,"symbol":"QCocoaEventDispatcher::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)","symbolLocation":2453,"imageIndex":56},{"imageOffset":736598,"symbol":"QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)","symbolLocation":550,"imageIndex":44},{"imageOffset":698687,"symbol":"QCoreApplication::exec()","symbolLocation":207,"imageIndex":44},{"imageOffset":240419,"symbol":"main","symbolLocation":3491,"imageIndex":0},{"imageOffset":25904,"symbol":"start","symbolLocation":3056,"imageIndex":75}]},{"id":5611834,"frames":[{"imageOffset":6196,"symbol":"start_wqthread","symbolLocation":0,"imageIndex":77}],"threadState":{"r13":{"value":0},"rax":{"value":33554800},"rflags":{"value":512},"cpu":{"value":0},"r14":{"value":0},"rsi":{"value":4355},"r8":{"value":409604},"cr2":{"value":0},"rdx":{"value":123145376145408},"r10":{"value":0},"r9":{"value":18446744073709551615},"r15":{"value":0},"rbx":{"value":123145376669696},"trap":{"value":133},"err":{"value":33554800},"r11":{"value":582},"rip":{"value":140703290595380},"rbp":{"value":0},"rsp":{"value":123145376669696},"r12":{"value":0},"rcx":{"value":0},"flavor":"x86_THREAD_STATE","rdi":{"value":123145376669696}}},{"id":5611835,"frames":[{"imageOffset":6196,"symbol":"start_wqthread","symbolLocation":0,"imageIndex":77}],"threadState":{"r13":{"value":0},"rax":{"value":33554800},"rflags":{"value":512},"cpu":{"value":0},"r14":{"value":0},"rsi":{"value":5635},"r8":{"value":409604},"cr2":{"value":0},"rdx":{"value":123145376681984},"r10":{"value":0},"r9":{"value":18446744073709551615},"r15":{"value":0},"rbx":{"value":123145377206272},"trap":{"value":133},"err":{"value":33554800},"r11":{"value":582},"rip":{"value":140703290595380},"rbp":{"value":0},"rsp":{"value":123145377206272},"r12":{"value":0},"rcx":{"value":0},"flavor":"x86_THREAD_STATE","rdi":{"value":123145377206272}}},{"id":5611846,"frames":[{"imageOffset":6196,"symbol":"start_wqthread","symbolLocation":0,"imageIndex":77}],"threadState":{"r13":{"value":0},"rax":{"value":33554800},"rflags":{"value":512},"cpu":{"value":0},"r14":{"value":0},"rsi":{"value":18703},"r8":{"value":409604},"cr2":{"value":0},"rdx":{"value":123145377218560},"r10":{"value":0},"r9":{"value":18446744073709551615},"r15":{"value":0},"rbx":{"value":123145377742848},"trap":{"value":133},"err":{"value":33554800},"r11":{"value":582},"rip":{"value":140703290595380},"rbp":{"value":0},"rsp":{"value":123145377742848},"r12":{"value":0},"rcx":{"value":0},"flavor":"x86_THREAD_STATE","rdi":{"value":123145377742848}}},{"id":5611847,"frames":[{"imageOffset":6196,"symbol":"start_wqthread","symbolLocation":0,"imageIndex":77}],"threadState":{"r13":{"value":0},"rax":{"value":33554800},"rflags":{"value":512},"cpu":{"value":0},"r14":{"value":0},"rsi":{"value":31235},"r8":{"value":409604},"cr2":{"value":0},"rdx":{"value":123145377755136},"r10":{"value":0},"r9":{"value":18446744073709551615},"r15":{"value":0},"rbx":{"value":123145378279424},"trap":{"value":133},"err":{"value":33554800},"r11":{"value":582},"rip":{"value":140703290595380},"rbp":{"value":0},"rsp":{"value":123145378279424},"r12":{"value":0},"rcx":{"value":0},"flavor":"x86_THREAD_STATE","rdi":{"value":123145378279424}}},{"id":5611848,"name":"Gwenview::ThumbnailGenerator","threadState":{"r13":{"value":4294967552},"rax":{"value":260},"rflags":{"value":583},"cpu":{"value":0},"r14":{"value":105553154343616},"rsi":{"value":4294967552},"r8":{"value":0},"cr2":{"value":0},"rdx":{"value":0},"r10":{"value":0},"r9":{"value":160},"r15":{"value":0},"rbx":{"value":123145378816000},"trap":{"value":133},"err":{"value":33554737},"r11":{"value":582},"rip":{"value":140703290353398},"rbp":{"value":123145378815424},"rsp":{"value":123145378815272},"r12":{"value":123145378815296},"rcx":{"value":123145378815272},"flavor":"x86_THREAD_STATE","rdi":{"value":105553154343616}},"frames":[{"imageOffset":14070,"symbol":"__psynch_cvwait","symbolLocation":10,"imageIndex":78},{"imageOffset":25262,"symbol":"_pthread_cond_wait","symbolLocation":988,"imageIndex":77},{"imageOffset":2652251,"symbol":"QWaitConditionPrivate::wait(QDeadlineTimer)","symbolLocation":75,"imageIndex":44},{"imageOffset":2652077,"symbol":"QWaitCondition::wait(QMutex*, QDeadlineTimer)","symbolLocation":77,"imageIndex":44},{"imageOffset":557202,"symbol":"Gwenview::ThumbnailGenerator::run()","symbolLocation":386,"imageIndex":2},{"imageOffset":2619017,"symbol":"QThreadPrivate::start(void*)","symbolLocation":393,"imageIndex":44},{"imageOffset":24069,"symbol":"_pthread_start","symbolLocation":115,"imageIndex":77},{"imageOffset":6231,"symbol":"thread_start","symbolLocation":15,"imageIndex":77}]},{"id":5611850,"name":"QDBusConnectionManager","threadState":{"r13":{"value":0},"rax":{"value":4},"rflags":{"value":583},"cpu":{"value":0},"r14":{"value":105553127509904},"rsi":{"value":1},"r8":{"value":0},"cr2":{"value":0},"rdx":{"value":4294967295},"r10":{"value":4294967296},"r9":{"value":598499328},"r15":{"value":0},"rbx":{"value":1},"trap":{"value":133},"err":{"value":33554662},"r11":{"value":582},"rip":{"value":140703290370290},"rbp":{"value":123145379351984},"rsp":{"value":123145379351912},"r12":{"value":9223372036854775807},"rcx":{"value":123145379351912},"flavor":"x86_THREAD_STATE","rdi":{"value":105553127509904}},"frames":[{"imageOffset":30962,"symbol":"poll","symbolLocation":10,"imageIndex":78},{"imageOffset":2612223,"symbol":"qt_safe_poll(pollfd*, unsigned int, QDeadlineTimer)","symbolLocation":79,"imageIndex":44},{"imageOffset":2629809,"symbol":"QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)","symbolLocation":1185,"imageIndex":44},{"imageOffset":736598,"symbol":"QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)","symbolLocation":550,"imageIndex":44},{"imageOffset":1824570,"symbol":"QThread::exec()","symbolLocation":298,"imageIndex":44},{"imageOffset":128954,"symbol":"QDBusConnectionManager::run()","symbolLocation":26,"imageIndex":43},{"imageOffset":2619017,"symbol":"QThreadPrivate::start(void*)","symbolLocation":393,"imageIndex":44},{"imageOffset":24069,"symbol":"_pthread_start","symbolLocation":115,"imageIndex":77},{"imageOffset":6231,"symbol":"thread_start","symbolLocation":15,"imageIndex":77}]},{"id":5611851,"name":"Gwenview::ThumbnailGenerator","threadState":{"r13":{"value":4294967552},"rax":{"value":260},"rflags":{"value":583},"cpu":{"value":0},"r14":{"value":105553154596160},"rsi":{"value":4294967552},"r8":{"value":0},"cr2":{"value":0},"rdx":{"value":0},"r10":{"value":0},"r9":{"value":160},"r15":{"value":0},"rbx":{"value":123145379889152},"trap":{"value":133},"err":{"value":33554737},"r11":{"value":582},"rip":{"value":140703290353398},"rbp":{"value":123145379888576},"rsp":{"value":123145379888424},"r12":{"value":123145379888448},"rcx":{"value":123145379888424},"flavor":"x86_THREAD_STATE","rdi":{"value":105553154596160}},"frames":[{"imageOffset":14070,"symbol":"__psynch_cvwait","symbolLocation":10,"imageIndex":78},{"imageOffset":25262,"symbol":"_pthread_cond_wait","symbolLocation":988,"imageIndex":77},{"imageOffset":2652251,"symbol":"QWaitConditionPrivate::wait(QDeadlineTimer)","symbolLocation":75,"imageIndex":44},{"imageOffset":2652077,"symbol":"QWaitCondition::wait(QMutex*, QDeadlineTimer)","symbolLocation":77,"imageIndex":44},{"imageOffset":557202,"symbol":"Gwenview::ThumbnailGenerator::run()","symbolLocation":386,"imageIndex":2},{"imageOffset":2619017,"symbol":"QThreadPrivate::start(void*)","symbolLocation":393,"imageIndex":44},{"imageOffset":24069,"symbol":"_pthread_start","symbolLocation":115,"imageIndex":77},{"imageOffset":6231,"symbol":"thread_start","symbolLocation":15,"imageIndex":77}]}],
+  "usedImages" : [
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4448456704,
+    "CFBundleShortVersionString" : "26.08",
+    "CFBundleIdentifier" : "org.kde.gwenview",
+    "size" : 430080,
+    "uuid" : "5359f2ab-19e0-394c-a53a-36a69816370f",
+    "path" : "\/opt\/pacman\/*\/gwenview.app\/Contents\/MacOS\/gwenview",
+    "name" : "gwenview",
+    "CFBundleVersion" : "26.08.2"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4449697792,
+    "size" : 237568,
+    "uuid" : "0b1b9430-704b-355d-a66d-1eefd18feeca",
+    "path" : "\/opt\/pacman\/*\/libKF6ItemModels.6.31.0.dylib",
+    "name" : "libKF6ItemModels.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4451913728,
+    "size" : 933888,
+    "uuid" : "10704f87-96bb-3100-8deb-5fe8e6bcf12a",
+    "path" : "\/opt\/pacman\/*\/libgwenviewlib.4.97.0.dylib",
+    "name" : "libgwenviewlib.4.97.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4449366016,
+    "size" : 32768,
+    "uuid" : "4cd70cac-04d5-39d1-9055-fb08fb229030",
+    "path" : "\/opt\/pacman\/*\/libQt6MultimediaWidgets.6.12.0.dylib",
+    "name" : "libQt6MultimediaWidgets.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4455755776,
+    "size" : 1110016,
+    "uuid" : "4ae7e5d5-1268-33ac-bc73-b6a0875149c8",
+    "path" : "\/opt\/pacman\/*\/libQt6Multimedia.6.12.0.dylib",
+    "name" : "libQt6Multimedia.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4453707776,
+    "size" : 782336,
+    "uuid" : "4eecc00d-d0d2-3ba5-ac18-6e36f33832c2",
+    "path" : "\/opt\/pacman\/*\/libKF6KIOFileWidgets.6.31.0.dylib",
+    "name" : "libKF6KIOFileWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4457816064,
+    "size" : 757760,
+    "uuid" : "cc7697b2-8437-3837-937f-1ee15d7a940f",
+    "path" : "\/opt\/pacman\/*\/libKF6KIOWidgets.6.31.0.dylib",
+    "name" : "libKF6KIOWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4450594816,
+    "size" : 241664,
+    "uuid" : "41f7db8c-68b8-38fb-b8d9-eec0bd5d7202",
+    "path" : "\/opt\/pacman\/*\/libKF6KIOGui.6.31.0.dylib",
+    "name" : "libKF6KIOGui.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4449456128,
+    "size" : 16384,
+    "uuid" : "ae8adb56-c5d4-3d46-9c5c-5d9eee27684e",
+    "path" : "\/opt\/pacman\/*\/libQt6Concurrent.6.12.0.dylib",
+    "name" : "libQt6Concurrent.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4460908544,
+    "size" : 1077248,
+    "uuid" : "edb86fe5-ad34-3009-90f9-f72bcea56cad",
+    "path" : "\/opt\/pacman\/*\/libKF6KIOCore.6.31.0.dylib",
+    "name" : "libKF6KIOCore.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4449513472,
+    "size" : 40960,
+    "uuid" : "9651c75d-0013-3963-aa4b-1437342238e8",
+    "path" : "\/opt\/pacman\/*\/libKF6Crash.6.31.0.dylib",
+    "name" : "libKF6Crash.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4450340864,
+    "size" : 98304,
+    "uuid" : "bb5fc2af-eacf-3077-ae38-cf0e2f6ad152",
+    "path" : "\/opt\/pacman\/*\/libKF6JobWidgets.6.31.0.dylib",
+    "name" : "libKF6JobWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4455075840,
+    "size" : 331776,
+    "uuid" : "21dd2441-9984-3765-bd4d-9387e7e3325d",
+    "path" : "\/opt\/pacman\/*\/libKF6Service.6.31.0.dylib",
+    "name" : "libKF6Service.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4451352576,
+    "size" : 139264,
+    "uuid" : "40e1777c-a1a0-3ef9-aac6-a9012197f91f",
+    "path" : "\/opt\/pacman\/*\/libKF6Completion.6.31.0.dylib",
+    "name" : "libKF6Completion.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4459917312,
+    "size" : 348160,
+    "uuid" : "2d63a1b4-ab05-335d-a9f9-3f2b2f2563ae",
+    "path" : "\/opt\/pacman\/*\/libKF6Solid.6.31.0.dylib",
+    "name" : "libKF6Solid.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4451065856,
+    "size" : 77824,
+    "uuid" : "14ddf9c2-fa13-3fbb-be65-a6e051b750e5",
+    "path" : "\/opt\/pacman\/*\/libKF6Bookmarks.6.31.0.dylib",
+    "name" : "libKF6Bookmarks.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4451233792,
+    "size" : 40960,
+    "uuid" : "643a39a6-5409-39a2-8e44-7fa5055cd686",
+    "path" : "\/opt\/pacman\/*\/libKF6WindowSystem.6.31.0.dylib",
+    "name" : "libKF6WindowSystem.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4463566848,
+    "size" : 544768,
+    "uuid" : "b64f9239-e840-3651-bfd5-3a4106e8c78d",
+    "path" : "\/opt\/pacman\/*\/libKF6XmlGui.6.31.0.dylib",
+    "name" : "libKF6XmlGui.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4462620672,
+    "size" : 303104,
+    "uuid" : "29650439-40ae-3150-ba79-639310355ef9",
+    "path" : "\/opt\/pacman\/*\/libQt6PrintSupport.6.12.0.dylib",
+    "name" : "libQt6PrintSupport.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4466806784,
+    "size" : 1400832,
+    "uuid" : "ce5729df-6e94-3cd5-a213-903719f27d59",
+    "path" : "\/opt\/pacman\/*\/libQt6Network.6.12.0.dylib",
+    "name" : "libQt6Network.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4464525312,
+    "size" : 180224,
+    "uuid" : "17297777-3b2e-3da4-a038-144b8a0ad7f4",
+    "path" : "\/opt\/pacman\/*\/libKF6ItemViews.6.31.0.dylib",
+    "name" : "libKF6ItemViews.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4451639296,
+    "size" : 118784,
+    "uuid" : "0560e380-a630-35aa-bf23-d744fd2dfc77",
+    "path" : "\/opt\/pacman\/*\/libQt6Xml.6.12.0.dylib",
+    "name" : "libQt6Xml.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4464918528,
+    "size" : 217088,
+    "uuid" : "1bb231cf-64bf-389e-9dbc-0e98af8b8ced",
+    "path" : "\/opt\/pacman\/*\/libKF6ConfigWidgets.6.31.0.dylib",
+    "name" : "libKF6ConfigWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4469104640,
+    "size" : 704512,
+    "uuid" : "5b4c8dd3-b9a2-33de-84f9-0d05ec19ab4b",
+    "path" : "\/opt\/pacman\/*\/libKF6CoreAddons.6.31.0.dylib",
+    "name" : "libKF6CoreAddons.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4473577472,
+    "size" : 2121728,
+    "uuid" : "e77af77f-947e-34e1-bf3d-1cbefc253924",
+    "path" : "\/opt\/pacman\/*\/libexiv2.0.28.9.dylib",
+    "name" : "libexiv2.0.28.9.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4470231040,
+    "size" : 806912,
+    "uuid" : "876c04a3-56df-3005-856b-673c25abc1af",
+    "path" : "\/opt\/pacman\/*\/libjpeg.8.3.2.dylib",
+    "name" : "libjpeg.8.3.2.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4459454464,
+    "size" : 200704,
+    "uuid" : "77058f73-b011-3578-9e3f-22c5add6f919",
+    "path" : "\/opt\/pacman\/*\/libpng16.16.59.0.dylib",
+    "name" : "libpng16.16.59.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4455567360,
+    "size" : 73728,
+    "uuid" : "0aea11c1-7e8b-3e66-b8df-cf4b04adabfa",
+    "path" : "\/opt\/pacman\/*\/libz.1.3.2.dylib",
+    "name" : "libz.1.3.2.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4465827840,
+    "size" : 360448,
+    "uuid" : "ab3b366f-033e-31b9-a208-6cc860b81ad6",
+    "path" : "\/opt\/pacman\/*\/liblcms2.2.20.0.dylib",
+    "name" : "liblcms2.2.20.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4450226176,
+    "size" : 36864,
+    "uuid" : "5ee67310-7d41-37ce-a4fa-2a50a6f1cbf4",
+    "path" : "\/opt\/pacman\/*\/libQt6OpenGLWidgets.6.12.0.dylib",
+    "name" : "libQt6OpenGLWidgets.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4471902208,
+    "size" : 454656,
+    "uuid" : "d01d6e99-65f7-3a44-8790-123de8413ccf",
+    "path" : "\/opt\/pacman\/*\/libQt6OpenGL.6.12.0.dylib",
+    "name" : "libQt6OpenGL.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4459708416,
+    "size" : 65536,
+    "uuid" : "c4eca4f6-6e96-32a8-a850-a10cd25d4892",
+    "path" : "\/opt\/pacman\/*\/libKF6IconWidgets.6.31.0.dylib",
+    "name" : "libKF6IconWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4479713280,
+    "size" : 1789952,
+    "uuid" : "aa22d546-df84-368e-8271-76ee0b72971d",
+    "path" : "\/opt\/pacman\/*\/libKF6WidgetsAddons.6.31.0.dylib",
+    "name" : "libKF6WidgetsAddons.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4463198208,
+    "size" : 159744,
+    "uuid" : "316adbbd-8218-3a1f-a9c8-180224874fc1",
+    "path" : "\/opt\/pacman\/*\/libKF6IconThemes.6.31.0.dylib",
+    "name" : "libKF6IconThemes.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4460638208,
+    "size" : 69632,
+    "uuid" : "fe38f981-15f3-341f-a1f0-355824951984",
+    "path" : "\/opt\/pacman\/*\/libKF6ColorScheme.6.31.0.dylib",
+    "name" : "libKF6ColorScheme.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4466294784,
+    "size" : 122880,
+    "uuid" : "ea41fad2-7d41-3ab3-b45d-718e99f16296",
+    "path" : "\/opt\/pacman\/*\/libKF6GuiAddons.6.31.0.dylib",
+    "name" : "libKF6GuiAddons.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4471173120,
+    "size" : 131072,
+    "uuid" : "5713d070-45d3-3388-9f3b-8031ad1aea71",
+    "path" : "\/opt\/pacman\/*\/libKF6ConfigGui.6.31.0.dylib",
+    "name" : "libKF6ConfigGui.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4476948480,
+    "size" : 376832,
+    "uuid" : "09125070-3d5e-3cc1-926a-8b55536aede2",
+    "path" : "\/opt\/pacman\/*\/libKF6I18n.6.31.0.dylib",
+    "name" : "libKF6I18n.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4477460480,
+    "size" : 368640,
+    "uuid" : "89622d25-fdbf-3159-a84a-b1d1c46356ed",
+    "path" : "\/opt\/pacman\/*\/libKF6ConfigCore.6.31.0.dylib",
+    "name" : "libKF6ConfigCore.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4449611776,
+    "size" : 28672,
+    "uuid" : "e4760179-958b-3e76-b1e5-29b4bcac99cb",
+    "path" : "\/opt\/pacman\/*\/libQt6SvgWidgets.6.12.0.dylib",
+    "name" : "libQt6SvgWidgets.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4490399744,
+    "size" : 5304320,
+    "uuid" : "9b6a13f2-47e5-3fc9-81c0-c364cbe8d632",
+    "path" : "\/opt\/pacman\/*\/libQt6Widgets.6.12.0.dylib",
+    "name" : "libQt6Widgets.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4478234624,
+    "size" : 446464,
+    "uuid" : "3635750f-a0d6-35cc-811c-b424caae0ce8",
+    "path" : "\/opt\/pacman\/*\/libQt6Svg.6.12.0.dylib",
+    "name" : "libQt6Svg.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4509622272,
+    "size" : 8294400,
+    "uuid" : "08713bd3-c54d-3777-a87b-5a6f83a01984",
+    "path" : "\/opt\/pacman\/*\/libQt6Gui.6.12.0.dylib",
+    "name" : "libQt6Gui.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4483592192,
+    "size" : 610304,
+    "uuid" : "6e8afb85-4d66-3945-a9e5-9d9e85a65733",
+    "path" : "\/opt\/pacman\/*\/libQt6DBus.6.12.0.dylib",
+    "name" : "libQt6DBus.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4520972288,
+    "size" : 5312512,
+    "uuid" : "8d955d11-f3d7-34d8-a380-ab762f0f2a89",
+    "path" : "\/opt\/pacman\/*\/libQt6Core.6.12.0.dylib",
+    "name" : "libQt6Core.6.12.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4478947328,
+    "size" : 606208,
+    "uuid" : "e150a084-b3c3-3951-902f-88096e6cee02",
+    "path" : "\/opt\/pacman\/*\/libtiff.6.3.0.dylib",
+    "name" : "libtiff.6.3.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4482486272,
+    "size" : 532480,
+    "uuid" : "7289d0f2-c95e-3eb2-bde9-925a0f1a0dcf",
+    "path" : "\/opt\/pacman\/*\/libpcre2-16.0.dylib",
+    "name" : "libpcre2-16.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4484706304,
+    "size" : 622592,
+    "uuid" : "b8fb4d89-43c0-36dc-88af-c97b69b75031",
+    "path" : "\/opt\/pacman\/*\/libssl.3.dylib",
+    "name" : "libssl.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503597056,
+    "size" : 3604480,
+    "uuid" : "07705225-76f6-3e86-9223-4af39b63918b",
+    "path" : "\/opt\/pacman\/*\/libcrypto.3.dylib",
+    "name" : "libcrypto.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4485632000,
+    "size" : 667648,
+    "uuid" : "f5561eb7-9efb-3f95-9aa8-06842431c4bd",
+    "path" : "\/opt\/pacman\/*\/libzstd.1.5.7.dylib",
+    "name" : "libzstd.1.5.7.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4465373184,
+    "size" : 65536,
+    "uuid" : "79bc3cf5-d405-3249-9875-fc414129397e",
+    "path" : "\/opt\/pacman\/*\/libKF6BookmarksWidgets.6.31.0.dylib",
+    "name" : "libKF6BookmarksWidgets.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4465532928,
+    "size" : 167936,
+    "uuid" : "58c8bdf7-78f4-39df-88b8-22a220223901",
+    "path" : "\/opt\/pacman\/*\/libintl.8.dylib",
+    "name" : "libintl.8.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4466561024,
+    "size" : 106496,
+    "uuid" : "fe685011-bc15-3bcf-ae06-8d271076ed08",
+    "path" : "\/opt\/pacman\/*\/libKF6Notifications.6.31.0.dylib",
+    "name" : "libKF6Notifications.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4472639488,
+    "size" : 241664,
+    "uuid" : "8b631654-50e8-3491-bd10-077b39061bf3",
+    "path" : "\/opt\/pacman\/*\/libKF6Codecs.6.31.0.dylib",
+    "name" : "libKF6Codecs.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4483076096,
+    "size" : 307200,
+    "uuid" : "c4af2cb1-3fa9-3f79-88fa-ab0bfd0b1f36",
+    "path" : "\/opt\/pacman\/*\/libKF6Archive.6.31.0.dylib",
+    "name" : "libKF6Archive.6.31.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4471476224,
+    "size" : 126976,
+    "uuid" : "653c12b3-7a7a-373e-bd18-7c07d79511b3",
+    "path" : "\/opt\/pacman\/*\/libexpat.1.12.3.dylib",
+    "name" : "libexpat.1.12.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4488736768,
+    "size" : 765952,
+    "uuid" : "12558130-df8a-3128-a2b2-669403447b60",
+    "path" : "\/opt\/pacman\/*\/libqcocoa.dylib",
+    "name" : "libqcocoa.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64h",
+    "base" : 4488269824,
+    "size" : 53248,
+    "uuid" : "030461fd-a024-364c-adf1-48145784cf32",
+    "path" : "\/usr\/lib\/libobjc-trampolines.dylib",
+    "name" : "libobjc-trampolines.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4490022912,
+    "size" : 163840,
+    "uuid" : "0f408f76-aafc-3321-996c-dd48684e83dc",
+    "path" : "\/opt\/pacman\/*\/libqmacstyle.dylib",
+    "name" : "libqmacstyle.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4502802432,
+    "size" : 32768,
+    "uuid" : "54391b13-7779-3495-ad01-b2774c9f9c7c",
+    "path" : "\/opt\/pacman\/*\/libqgif.dylib",
+    "name" : "libqgif.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4502876160,
+    "size" : 20480,
+    "uuid" : "96793a2a-5b88-3683-9223-ad5aff35633c",
+    "path" : "\/opt\/pacman\/*\/libqwbmp.dylib",
+    "name" : "libqwbmp.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4756770816,
+    "size" : 589824,
+    "uuid" : "3a75cb83-c71a-3211-be12-923e5a5565b8",
+    "path" : "\/opt\/pacman\/*\/libqwebp.dylib",
+    "name" : "libqwebp.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4502937600,
+    "size" : 28672,
+    "uuid" : "17b9a254-904c-3e17-bf6b-0b13cf8e905a",
+    "path" : "\/opt\/pacman\/*\/libqico.dylib",
+    "name" : "libqico.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503085056,
+    "size" : 32768,
+    "uuid" : "428f8581-c948-321f-ac45-e4ebf9be7740",
+    "path" : "\/opt\/pacman\/*\/libqmacheif.dylib",
+    "name" : "libqmacheif.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4757458944,
+    "size" : 610304,
+    "uuid" : "220c2588-99c8-3143-a307-b7ecf1490a51",
+    "path" : "\/opt\/pacman\/*\/libqjpeg.dylib",
+    "name" : "libqjpeg.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4759339008,
+    "size" : 1048576,
+    "uuid" : "de24334a-dfe7-31ba-a689-6a1105ac42e9",
+    "path" : "\/opt\/pacman\/*\/libqtiff.dylib",
+    "name" : "libqtiff.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503007232,
+    "size" : 24576,
+    "uuid" : "8993b2d9-7878-339a-8445-27307bfa2b71",
+    "path" : "\/opt\/pacman\/*\/libqsvg.dylib",
+    "name" : "libqsvg.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503252992,
+    "size" : 36864,
+    "uuid" : "3b9b10e9-f3c4-3b19-a146-0c4f7b6fd1f8",
+    "path" : "\/opt\/pacman\/*\/libqicns.dylib",
+    "name" : "libqicns.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503175168,
+    "size" : 20480,
+    "uuid" : "dc86cb00-41df-31e1-b884-4be1795874e8",
+    "path" : "\/opt\/pacman\/*\/libqtga.dylib",
+    "name" : "libqtga.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 4503408640,
+    "size" : 32768,
+    "uuid" : "86ee7561-598a-38cf-bcbe-04a78691a8e4",
+    "path" : "\/opt\/pacman\/*\/libqmacjp2.dylib",
+    "name" : "libqmacjp2.dylib"
+  },
+  {
+    "size" : 0,
+    "source" : "A",
+    "base" : 0,
+    "uuid" : "00000000-0000-0000-0000-000000000000"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703352549376,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.AppKit",
+    "size" : 22350868,
+    "uuid" : "4f8e63a0-45ab-396d-a3bb-2d51b3abe2c4",
+    "path" : "\/System\/Library\/Frameworks\/AppKit.framework\/Versions\/C\/AppKit",
+    "name" : "AppKit",
+    "CFBundleVersion" : "2575.70.58"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703444738048,
+    "CFBundleShortVersionString" : "1.11",
+    "CFBundleIdentifier" : "com.apple.QuartzCore",
+    "size" : 3854622,
+    "uuid" : "bbbb7b0f-8559-32d1-aad1-b88d54bfb865",
+    "path" : "\/System\/Library\/Frameworks\/QuartzCore.framework\/Versions\/A\/QuartzCore",
+    "name" : "QuartzCore",
+    "CFBundleVersion" : "1156.18.3"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64h",
+    "base" : 140703291064320,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.CoreFoundation",
+    "size" : 4939747,
+    "uuid" : "d23a9d3b-a476-3d45-a6ab-e4df1eeda35b",
+    "path" : "\/System\/Library\/Frameworks\/CoreFoundation.framework\/Versions\/A\/CoreFoundation",
+    "name" : "CoreFoundation",
+    "CFBundleVersion" : "3603.1.419"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703486926848,
+    "CFBundleShortVersionString" : "2.1.1",
+    "CFBundleIdentifier" : "com.apple.HIToolbox",
+    "size" : 3020526,
+    "uuid" : "8b74c94f-3fc3-31d1-9973-1c72e9b6a437",
+    "path" : "\/System\/Library\/Frameworks\/Carbon.framework\/Versions\/A\/Frameworks\/HIToolbox.framework\/Versions\/A\/HIToolbox",
+    "name" : "HIToolbox"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703286763520,
+    "size" : 632552,
+    "uuid" : "8b636e0c-5b59-33d2-8753-547c3a7fa74f",
+    "path" : "\/usr\/lib\/dyld",
+    "name" : "dyld"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64h",
+    "base" : 140703286476800,
+    "size" : 282716,
+    "uuid" : "88aa23bf-f45d-3a23-960d-8c093783c3dc",
+    "path" : "\/usr\/lib\/libobjc.A.dylib",
+    "name" : "libobjc.A.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703290589184,
+    "size" : 49112,
+    "uuid" : "2410dcd3-4d92-30b2-96ec-4bd6f78139d4",
+    "path" : "\/usr\/lib\/system\/libsystem_pthread.dylib",
+    "name" : "libsystem_pthread.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "x86_64",
+    "base" : 140703290339328,
+    "size" : 248608,
+    "uuid" : "42669b25-d200-3f98-924a-47c1135d8bf4",
+    "path" : "\/usr\/lib\/system\/libsystem_kernel.dylib",
+    "name" : "libsystem_kernel.dylib"
+  }
+],
+  "sharedCache" : {
+  "base" : 140703258288128,
+  "size" : 30064771072,
+  "uuid" : "90db0deb-2344-3601-b011-b87312d74cfb"
+},
+  "vmSummary" : "ReadOnly portion of Libraries: Total=1.3G resident=0K(0%) swapped_out_or_unallocated=1.3G(100%)\nWritable regions: Total=657.8M written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=657.8M(100%)\n\n                                VIRTUAL   REGION \nREGION TYPE                        SIZE    COUNT (non-coalesced) \n===========                     =======  ======= \nAccelerate framework               128K        1 \nActivity Tracing                   256K        1 \nCG image                           120K        9 \nCG raster data                      72K        6 \nColorSync                          232K       27 \nCoreUI image data                  304K        2 \nFoundation                          16K        1 \nKernel Alloc Once                    8K        1 \nMALLOC                           645.5M       86 \nMALLOC guard page                   48K       12 \nSTACK GUARD                       56.0M        8 \nStack                             11.6M        8 \nVM_ALLOCATE                         96K        9 \n__CTF                               824        1 \n__DATA                            32.7M      989 \n__DATA_CONST                     102.4M     1002 \n__DATA_DIRTY                      2575K      335 \n__FONT_DATA                        2352        1 \n__INFO_FILTER                         8        1 \n__LINKEDIT                       182.5M       71 \n__OBJC_RO                         61.3M        1 \n__OBJC_RW                         2396K        2 \n__TEXT                             1.1G     1012 \n__TEXT (graphics)                 3000K        7 \n__TPRO_CONST                         16        2 \ndyld private memory                128K        1 \nmapped file                      223.2M       29 \nshared memory                     1308K       18 \n===========                     =======  ======= \nTOTAL                              2.4G     3643 \n",
+  "legacyInfo" : {
+  "threadTriggered" : {
+    "queue" : "com.apple.main-thread"
+  }
+},
+  "logWritingSignature" : "9735751307a6d1a7ea3ce6fc0a0371d9c6f5eea0",
+  "trialInfo" : {
+  "rollouts" : [
+    {
+      "rolloutId" : "67fd77fe1f9da9148f70d6ed",
+      "factorPackIds" : {
+
+      },
+      "deploymentId" : 240000020
+    },
+    {
+      "rolloutId" : "6246d6a916a70b047e454124",
+      "factorPackIds" : {
+
+      },
+      "deploymentId" : 240000010
+    }
+  ],
+  "experiments" : [
+
+  ]
+}
+}
+
+Model: MacBookPro15,1, BootROM 2103.160.2.0.0 (iBridge: 24.16.6005.0.0,0), 8 processors, 8-Core Intel Core i9, 2.3 GHz, 16 GB, SMC 
+Graphics: Intel UHD Graphics 630, Intel UHD Graphics 630, Built-In
+Display: Color LCD, 2880 x 1800 Retina, Main, MirrorOff, Online
+Graphics: Radeon Pro 560X, Radeon Pro 560X, PCIe, 4 GB
+Memory Module: BANK 0/ChannelA-DIMM0, 8 GB, DDR4, 2400 MHz, SK Hynix, HMA81GS6AFR8N-UH
+Memory Module: BANK 2/ChannelB-DIMM0, 8 GB, DDR4, 2400 MHz, SK Hynix, HMA81GS6AFR8N-UH
+AirPort: spairport_wireless_card_type_wifi (0x14E4, 0x7BF), wl0: Jul 26 2024 22:09:35 version 9.30.514.0.32.5.94 FWID 01-47278712
+AirPort: 
+Bluetooth: Version (null), 0 services, 0 devices, 0 incoming serial ports
+Network Service: Wi-Fi, AirPort, en0
+USB Device: USB31Bus
+USB Device: T2Bus
+USB Device: Touch Bar Backlight
+USB Device: Touch Bar Display
+USB Device: Apple Internal Keyboard / Trackpad
+USB Device: Headset
+USB Device: Ambient Light Sensor
+USB Device: FaceTime HD Camera (Built-in)
+USB Device: Apple T2 Controller
+Thunderbolt Bus: MacBook Pro, Apple Inc., 47.5
+Thunderbolt Bus: MacBook Pro, Apple Inc., 47.5

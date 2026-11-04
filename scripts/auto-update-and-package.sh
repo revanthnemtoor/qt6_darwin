@@ -125,10 +125,19 @@ if [[ -z "${LATEST_UPSTREAM}" ]]; then
 fi
 log "  Latest upstream stable release: ${LATEST_UPSTREAM}"
 
-# Query upstream stable git tag commit hash for a module (fallback to "none" if offline)
+# Query git commit hash for a module (uses revanthnemtoor/<mod> fork branch darwin-<ver> if forked, else code.qt.io tag v<ver>)
+FORK_OWNER="${QT_FORK_OWNER:-revanthnemtoor}"
+
 get_upstream_git_info() {
     local mod_short="$1"
     local target_ver="$2"
+    local fork_url="https://github.com/${FORK_OWNER}/${mod_short}.git"
+    local fork_ref
+    fork_ref=$(git ls-remote --heads "${fork_url}" "refs/heads/darwin-${target_ver}" 2>/dev/null | tail -n 1 || true)
+    if [[ -n "${fork_ref}" ]]; then
+        echo "${fork_ref}" | awk '{print $1}'
+        return 0
+    fi
     local git_url="https://code.qt.io/qt/${mod_short}.git"
     local ref_line
     ref_line=$(git ls-remote --tags "${git_url}" "refs/tags/v${target_ver}" "refs/tags/v${target_ver}^{}" 2>/dev/null | tail -n 1 || true)
@@ -137,6 +146,38 @@ get_upstream_git_info() {
     else
         echo "tarball-v${target_ver}"
     fi
+}
+
+# Sync a forked module (e.g., revanthnemtoor/qtbase) to a new upstream release tag v<target_ver>
+sync_module_fork() {
+    local mod_short="$1"
+    local prev_ver="$2"
+    local target_ver="$3"
+    local src_dir="$4"
+    local fork_url="https://github.com/${FORK_OWNER}/${mod_short}.git"
+    local upstream_url="https://github.com/qt/${mod_short}.git"
+
+    if ! git ls-remote "${fork_url}" HEAD >/dev/null 2>&1; then
+        return 0
+    fi
+
+    log "  --> Syncing fork ${FORK_OWNER}/${mod_short} onto upstream tag v${target_ver}..."
+    if [[ ! -d "${src_dir}/.git" ]]; then
+        git clone --branch "darwin-${prev_ver}" "${fork_url}" "${src_dir}" || git clone "${fork_url}" "${src_dir}"
+    fi
+    (
+        cd "${src_dir}"
+        git remote get-url origin >/dev/null 2>&1 || git remote add origin "${fork_url}"
+        git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "${upstream_url}"
+        git fetch --depth=1 upstream tag "v${target_ver}"
+        if git show-ref --verify --quiet "refs/heads/darwin-${prev_ver}"; then
+            git checkout -B "darwin-${target_ver}" "darwin-${prev_ver}"
+            git rebase "v${target_ver}" || true
+        else
+            git checkout -B "darwin-${target_ver}" "v${target_ver}^{commit}"
+        fi
+        git push -u origin "darwin-${target_ver}" --force || true
+    )
 }
 
 # Build & package qt6-base for a given architecture
@@ -357,6 +398,8 @@ for entry in "${ALL_MODULES[@]}"; do
         sed -i '' "s/^sha256sums=.*/sha256sums=('${actual_src_sha256}')/" "${pkgbuild_path}"
 
         if [[ "${pkg_name}" == "qt6-base" ]]; then
+            sync_module_fork "qtbase" "${local_ver}" "${LATEST_UPSTREAM}" "${PROJECT_ROOT}/build/qtbase-everywhere-src-${LATEST_UPSTREAM}"
+            git_commit=$(get_upstream_git_info "${mod_short}" "${LATEST_UPSTREAM}")
             if [[ "${ARCH_TARGET}" == "x86_64" || "${ARCH_TARGET}" == "both" ]]; then
                 build_qtbase_arch "x86_64" "${LATEST_UPSTREAM}"
             fi

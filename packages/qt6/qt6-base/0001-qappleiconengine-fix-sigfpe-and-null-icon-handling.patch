@@ -1,0 +1,68 @@
+--- a/src/gui/platform/darwin/qappleiconengine.mm
++++ b/src/gui/platform/darwin/qappleiconengine.mm
+@@ -344,19 +344,23 @@ QList<QSize> QAppleIconEngine::availableIconSizes(double aspectRatio)
+ 
+ QList<QSize> QAppleIconEngine::availableSizes(QIcon::Mode, QIcon::State)
+ {
+-    const double aspectRatio = isNull() ? 1.0 : m_image.size.width / m_image.size.height;
++    if (isNull() || m_image.size.width <= 0 || m_image.size.height <= 0)
++        return {};
++    const double aspectRatio = double(m_image.size.width) / double(m_image.size.height);
+     return availableIconSizes(aspectRatio);
+ }
+ 
+ QSize QAppleIconEngine::actualSize(const QSize &size, QIcon::Mode /*mode*/, QIcon::State /*state*/)
+ {
+-    const double inputAspectRatio = isNull() ? 1.0 : m_image.size.width / m_image.size.height;
+-    const double outputAspectRatio = size.width() / size.height();
++    if (isNull() || size.isEmpty() || m_image.size.width <= 0 || m_image.size.height <= 0)
++        return QSize();
++    const double inputAspectRatio = double(m_image.size.width) / double(m_image.size.height);
++    const double outputAspectRatio = double(size.width()) / double(size.height());
+     QSize result = size;
+     if (outputAspectRatio > inputAspectRatio)
+-        result.rwidth() = result.height() * inputAspectRatio;
++        result.rwidth() = qRound(result.height() * inputAspectRatio);
+     else
+-        result.rheight() = result.width() / inputAspectRatio;
++        result.rheight() = qRound(result.width() / inputAspectRatio);
+     return result;
+ }
+ 
+@@ -406,9 +410,14 @@ auto *configuredImage(const UIImage *image, const QColor &color)
+ 
+ QPixmap QAppleIconEngine::scaledPixmap(const QSize &size, QIcon::Mode mode, QIcon::State state, qreal scale)
+ {
++    if (isNull() || size.isEmpty() || scale <= 0)
++        return QPixmap();
++
+     const CacheKey key(mode, state, QPalette(), size, scale);
+     QPixmap pixmap = m_cache.value(key);
+     if (pixmap.isNull()) {
+         const QSize paintSize = actualSize(size, mode, state);
++        if (paintSize.isEmpty())
++            return QPixmap();
+         const QSize paintOffset = paintSize != size
+                                 ? (QSizeF(size - paintSize) * 0.5).toSize()
+                                 : QSize();
+--- a/src/gui/platform/darwin/qapplefileiconengine.mm
++++ b/src/gui/platform/darwin/qapplefileiconengine.mm
+@@ -41,6 +41,8 @@ QAppleFileIconEngine::~QAppleFileIconEngine()
+ 
+ QList<QSize> QAppleFileIconEngine::availableSizes(QIcon::Mode, QIcon::State)
+ {
++    if (isNull())
++        return {};
+     return QAppleIconEngine::availableIconSizes();
+ }
+ 
+@@ -51,7 +53,7 @@ bool QAppleFileIconEngine::isNull()
+ 
+ QPixmap QAppleFileIconEngine::filePixmap(const QSize &size, QIcon::Mode, QIcon::State)
+ {
+-    if (!m_image)
++    if (!m_image || size.isEmpty())
+         return QPixmap();
+ 
+     const QSize preferredSize = QSize(m_image.size.width,
+
