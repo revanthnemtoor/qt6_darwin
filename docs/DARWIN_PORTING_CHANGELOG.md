@@ -106,3 +106,4 @@ All module hashes are automatically maintained in [`out/latest-hashes.txt`](../o
 | `lib/libQt6Core.6.12.0.dylib` | `arm64` | `a333b68371af62d15bcc8ca3dba822ef7dfb62db05c48b9b3b69fcc466deac67` |
 | `plugins/platforms/libqcocoa.dylib` | `x86_64` | `365434ef385f45176388a1508a4b60fc0248ad4c601e039aae26b723c8630346` |
 | `plugins/platforms/libqcocoa.dylib` | `arm64` | `20336cd63c516a56a54ad7a36dbbb18cb8eda040af8176a2cadd7b8901bf797d` |
+
