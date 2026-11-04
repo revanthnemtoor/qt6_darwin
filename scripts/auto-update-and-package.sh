@@ -113,15 +113,28 @@ if [[ "${CHECK_ONLY}" == "true" ]]; then
     if [[ "${UPDATE_AVAILABLE}" == "true" ]]; then exit 10; else exit 0; fi
 fi
 
+MODULES=("qt6-base" "qt6-svg" "qt6-imageformats" "qt6-shadertools" "qt6-tools")
+
 if [[ "${UPDATE_AVAILABLE}" == "false" && "${FORCE}" == "false" ]]; then
-    # Check if packages already exist in OUT_DIR
-    X86_PKG="${OUT_DIR}/qt6-base-${CURRENT_VERSION}-1-darwin_x86_64.pkg.tar.zst"
-    ARM_PKG="${OUT_DIR}/qt6-base-${CURRENT_VERSION}-1-darwin_arm64.pkg.tar.zst"
-    if [[ -f "${X86_PKG}" && -f "${ARM_PKG}" ]]; then
-        log "✓ Up-to-date. Packages already exist in: ${OUT_DIR}"
+    # Check if all module packages already exist in OUT_DIR for both architectures
+    ALL_EXIST=true
+    EXISTING_PKGS=()
+    for mod in "${MODULES[@]}"; do
+        for arch in x86_64 arm64; do
+            pkg="${OUT_DIR}/${mod}-${CURRENT_VERSION}-1-darwin_${arch}.pkg.tar.zst"
+            if [[ ! -f "${pkg}" ]]; then
+                ALL_EXIST=false
+            else
+                EXISTING_PKGS+=("${pkg}")
+            fi
+        done
+    done
+    if [[ "${ALL_EXIST}" == "true" ]]; then
+        log "✓ Up-to-date. All ${#EXISTING_PKGS[@]} module packages already exist in: ${OUT_DIR}"
         if [[ "${JSON_OUTPUT}" == "true" ]]; then
-            printf '{"status": "up_to_date", "version": "%s", "packages": ["%s", "%s"]}\n' \
-                "${CURRENT_VERSION}" "${X86_PKG}" "${ARM_PKG}"
+            PKG_LIST_JSON=$(printf '"%s",' "${EXISTING_PKGS[@]}" | sed 's/,$//')
+            printf '{"status": "up_to_date", "version": "%s", "packages": [%s]}\n' \
+                "${CURRENT_VERSION}" "${PKG_LIST_JSON}"
         fi
         exit 0
     fi
@@ -227,16 +240,16 @@ package_arch() {
     mkdir -p "${STAGE_DIR}"
     DESTDIR="${STAGE_DIR}" cmake --install "${BUILD_DIR}"
 
-    # --- Clean Build Artifacts & macOS Junk ---
-    log "  Purging build artifacts and metadata (.o, objects-Release, .DS_Store)..."
-    rm -rf "${STAGE_DIR}/opt/pacman/plugins/permissions/objects-Release"
-    find "${STAGE_DIR}" -name "*.o" -delete
+    # --- Clean macOS Finder Junk ---
+    # Note: Do NOT delete plugins/permissions/objects-Release/*.cpp.o as they are
+    # CMake IMPORTED_OBJECTS_RELEASE targets required by Qt6CoreConfig.cmake on Darwin.
+    log "  Purging macOS metadata (.DS_Store)..."
     find "${STAGE_DIR}" -name ".DS_Store" -delete
 
-    # Ad-hoc sign all Mach-O binaries
+    # Ad-hoc sign all Mach-O executables, dylibs, and bundles (skip .o object files)
     log "  Applying ad-hoc codesigning..."
     find "${STAGE_DIR}" -type f -exec sh -c '
-        file "$1" | grep -q "Mach-O" && codesign --sign - --force "$1" 2>/dev/null || true
+        file "$1" | grep -qE "Mach-O.*(executable|dynamically linked shared library|bundle)" && codesign --sign - --force "$1" 2>/dev/null || true
     ' _ {} \;
 
     # Audit for forbidden linkage
@@ -299,15 +312,14 @@ options = !lto
 options = !autodeps
 EOF
 
-    # Generate .MTREE
+    # Generate .MTREE (shell-agnostic via find + sort -z, normalized to root:wheel 0:0)
     log "  Generating .MTREE file..."
     (
         cd "${STAGE_DIR}"
-        export LC_COLLATE=C
-        shopt -s dotglob globstar
-        printf '%s\0' **/* | LANG=C bsdtar --uid 0 --gid 0 --uname root --gname wheel -cnf - --format=mtree \
-            --options='!all,use-set,type,uid,gid,mode,time,size,sha256,link' \
-            --null --files-from - --exclude .MTREE | gzip -c -f -n > .MTREE
+        find .PKGINFO .BUILDINFO opt -print0 | LC_ALL=C /usr/bin/sort -z | \
+            LANG=C bsdtar --uid 0 --gid 0 --uname root --gname wheel -cnf - --format=mtree \
+                --options='!all,use-set,type,uid,gid,mode,time,size,sha256,link' \
+                --null --files-from - | gzip -c -f -n > .MTREE
     )
 
     # Compress into .pkg.tar.zst using bsdtar and zstd -19
@@ -316,13 +328,7 @@ EOF
         cd "${STAGE_DIR}"
         (
             printf '%s\0' .PKGINFO .BUILDINFO .MTREE
-            export LC_COLLATE=C
-            shopt -s dotglob globstar
-            for f in **/*; do
-                if [[ "$f" != ".PKGINFO" && "$f" != ".BUILDINFO" && "$f" != ".MTREE" ]]; then
-                    printf '%s\0' "$f"
-                fi
-            done
+            find opt -print0 | LC_ALL=C /usr/bin/sort -z
         ) | LANG=C bsdtar --no-fflags --no-read-sparse --uid 0 --gid 0 --uname root --gname wheel -cnf - --null --files-from - | \
             /opt/pacman/bin/zstd -c -T0 -19 -z > "${FINAL_PKG}"
     )
@@ -346,6 +352,36 @@ fi
 if [[ "${ARCH_TARGET}" == "arm64" || "${ARCH_TARGET}" == "both" ]]; then
     package_arch "arm64"
     BUILT_PACKAGES+=("${OUT_DIR}/qt6-base-${TARGET_VERSION}-1-darwin_arm64.pkg.tar.zst")
+fi
+
+# Build additional Qt 6 modules if their tarballs are present
+declare -a SUBMODULES=(
+    "qtsvg|qt6-svg|Classes for displaying the contents of SVG files (Support for SVG 1.2 Tiny)"
+    "qtimageformats|qt6-imageformats|Plugins for additional image formats: TIFF, TGA, WBMP, WebP, ICNS, MNG"
+    "qtshadertools|qt6-shadertools|Provides functionality for the shader pipeline that allows Qt Quick to operate on Metal, Vulkan, and OpenGL"
+    "qttools|qt6-tools|A cross-platform application and UI framework (Development Tools, QtHelp, Designer, Linguist)"
+)
+
+for entry in "${SUBMODULES[@]}"; do
+    IFS='|' read -r mod_short pkg_name pkg_desc <<< "${entry}"
+    QT_VERSION="${TARGET_VERSION}" "${SCRIPT_DIR}/build-module.sh" "${mod_short}" "${pkg_name}" "${pkg_desc}" qt6-base
+    if [[ "${ARCH_TARGET}" == "x86_64" || "${ARCH_TARGET}" == "both" ]]; then
+        BUILT_PACKAGES+=("${OUT_DIR}/${pkg_name}-${TARGET_VERSION}-1-darwin_x86_64.pkg.tar.zst")
+    fi
+    if [[ "${ARCH_TARGET}" == "arm64" || "${ARCH_TARGET}" == "both" ]]; then
+        BUILT_PACKAGES+=("${OUT_DIR}/${pkg_name}-${TARGET_VERSION}-1-darwin_arm64.pkg.tar.zst")
+    fi
+done
+
+# Generate Pacman repository databases in OUT_DIR
+if [[ -x "/opt/pacman/bin/repo-add" ]]; then
+    log "--> Updating Pacman repository databases in ${OUT_DIR}..."
+    if ls "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst >/dev/null 2>&1; then
+        /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-x86_64.db.tar.gz" "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst
+    fi
+    if ls "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst >/dev/null 2>&1; then
+        /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-arm64.db.tar.gz" "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst
+    fi
 fi
 
 log "\n=========================================="

@@ -4,39 +4,37 @@
 
 | Test / Audit Category | Target | Method | Status | Verified Details |
 |---|---|---|---|---|
-| **Architecture Slice** | `x86_64` | `lipo -info` on all binaries | **VERIFIED** | Non-fat Mach-O `x86_64` |
-| **Clean Runtime Dependencies** | Zero external / third-party | `otool -L` audit via `scripts/verify-package.sh` | **VERIFIED** | 0 references to `/opt/local` or `/usr/local` |
-| **Code Signing** | Ad-hoc signature | `codesign -v` on all binaries | **VERIFIED** | All executables, dylibs, and plugins signed |
-| **Package Generation** | `.pkg.tar.zst` | Pacman-compatible tarball + zstd -19 | **VERIFIED** | `qt6-base-6.12.0-1-darwin_x86_64.pkg.tar.zst` (15.42 MiB) |
-| **Package Installation** | `/opt/pacman` | `/opt/pacman/bin/pacman -U` | **VERIFIED** | Installed cleanly without error or conflicts |
-| **QCoreApplication** | Core runtime | `tests/smoketest` | **VERIFIED** | Instantiated and executed event loop |
-| **QGuiApplication & Cocoa Platform** | Display backend | `tests/smoketest` | **VERIFIED** | Platform plugins discovered and loaded |
-| **QtWidgets** | UI Toolkit | `tests/smoketest` | **VERIFIED** | `QLabel` initialized and managed |
-| **QtNetwork** | Networking | `tests/smoketest` | **VERIFIED** | `QNetworkAccessManager` functional |
-| **QtSql** | Database driver | `tests/smoketest` | **VERIFIED** | `QSQLITE` driver available |
-| **Downstream CMake Integration** | Toolchain discovery | `find_package(Qt6)` | **VERIFIED** | Found Qt6 components using `-DCMAKE_PREFIX_PATH=/opt/pacman` |
+| **Architecture Slices** | `darwin_x86_64` & `darwin_arm64` | `lipo -info` on all binaries | **VERIFIED** | Non-fat Mach-O `x86_64` and `arm64` packages |
+| **Clean Runtime Dependencies** | Zero external / third-party | `otool -L` audit via `scripts/verify-package.sh` | **VERIFIED** | 0 references to `/opt/local` (MacPorts) or `/usr/local` (Homebrew) |
+| **Code Signing** | Ad-hoc signature | `codesign -v` on all binaries | **VERIFIED** | All executables, dylibs, `.app` bundles, and plugins signed |
+| **Metadata & Ownership** | `.PKGINFO`, `.BUILDINFO`, `.MTREE` | `bsdtar --uid 0 --gid 0` (`root:wheel`) | **VERIFIED** | `pacman -Qk` reports `0 missing files` across all 5 packages |
+| **Cocoa QPA & Automatic Plugin Discovery** | `libqcocoa.dylib` | `env -u QT_PLUGIN_PATH -u QT_QPA_PLATFORM` | **VERIFIED** | Active QPA `cocoa`, style `macos`, built-in `PluginsPath` `/opt/pacman/plugins` |
+| **Native Window Launch** | `QtWidgets` | `tests/smoketest` | **VERIFIED** | `QMainWindow` + `QSvgWidget` + `QUiLoader` rendered on screen (`winId` created, Cocoa event loop processed) |
+| **SVG Rendering (`qt6-svg`)** | `Qt6::Svg` & `Qt6::SvgWidgets` | `QSvgRenderer` & `QSvgWidget` | **VERIFIED** | Rendered 64x64 inline SVG (`center pixel ARGB: 0xff41cd52`), `svg`/`svgz` plugins active |
+| **Extended Image Formats (`qt6-imageformats`)** | `QImageReader::supportedImageFormats()` | `tests/smoketest` | **VERIFIED** | `bmp cur gif heic heif icns ico jfif jp2 jpeg jpg pbm pgm png ppm svg svgz tga tif tiff wbmp webp xbm xpm` |
+| **Developer & UI Tools (`qt6-tools`, `qt6-shadertools`)** | `Qt6::UiTools`, Designer, Linguist, `qsb` | `QUiLoader` + CLI execution | **VERIFIED** | `QUiLoader` dynamically instantiated `.ui` form; `Designer.app`, `Linguist.app`, `Assistant.app`, `lrelease`, `lupdate`, `qsb` verified |
 
-## 2. Test Execution Log
+## 2. Multi-Module Native Smoketest Execution Log
 ```text
-$ cmake -B tests/smoketest/build -S tests/smoketest -G Ninja -DCMAKE_PREFIX_PATH=/opt/pacman
--- Found OpenGL: /Applications/Xcode.app/.../OpenGL.framework
--- Configuring done (1.7s)
--- Generating done (0.0s)
+=== Qt 6.12.0 Darwin Multi-Module Native Validation Suite ===
+[1] Platform & Plugin Discovery (qt6-base):
+  - Active QPA Platform : cocoa
+  - Active Widget Style : macos
+  - Built-in PluginsPath: /opt/pacman/plugins
+  - Library Paths       : /opt/pacman/plugins /Users/revanth/Projects/porting_arch_apps/qt6_darwin/tests/smoketest/build 
+[2] Validating SVG Rendering & Widgets (qt6-svg):
+  - QSvgRenderer rendered 64x64 SVG (center pixel ARGB: 0xff41cd52)
+[3] Discovered Image Formats (qt6-base + qt6-svg + qt6-imageformats):
+  - bmp cur gif heic heif icns ico jfif jp2 jpeg jpg pbm pgm png ppm svg svgz tga tif tiff wbmp webp xbm xpm 
+  - Verified extended image plugins: svg, webp, tiff, icns, tga, wbmp
+[4] Validating QUiLoader (qt6-tools):
+  - QUiLoader instantiated widget: DynamicTestForm
+[5] Launching Native Cocoa Window (QtWidgets + QSvgWidget + QUiLoader):
+  - Native window shown (winId: 140614820987056)
+[6] SQL & Network Modules:
+  - QNetworkAccessManager initialized
+  - SQL Drivers: QSQLITE 
+[7] Cocoa event loop processed events and timer fired cleanly.
 
-$ cmake --build tests/smoketest/build
-[1/2] Building CXX object CMakeFiles/qt6_smoketest.dir/main.cpp.o
-[2/2] Linking CXX executable qt6_smoketest
-
-$ ./tests/smoketest/build/qt6_smoketest
-[Test 1] Initializing QApplication...
-  ✓ Application created: qt6_smoketest
-  ✓ Platform name: offscreen
-[Test 2] Testing Qt Widgets...
-  ✓ QLabel instantiated with text: Hello from Pacman Qt 6 on macOS!
-[Test 3] Testing Qt Network...
-  ✓ QNetworkAccessManager instantiated.
-[Test 4] Testing Qt SQL...
-  ✓ Available SQL drivers: QSQLITE 
-
-✓ ALL RUNTIME SMOKETESTS PASSED SUCCESSFULLY!
+✓ ALL NATIVE QT6 DARWIN VALIDATION CHECKS PASSED (exit code 0)
 ```

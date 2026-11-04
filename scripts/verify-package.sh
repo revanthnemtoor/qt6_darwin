@@ -14,7 +14,9 @@ FAILURES=0
 
 audit_binary() {
     local bin="$1"
-    if ! file "${bin}" | grep -q "Mach-O"; then
+    local ftype
+    ftype=$(file "${bin}")
+    if ! echo "${ftype}" | grep -qE "Mach-O.*(executable|dynamically linked shared library|bundle)"; then
         return
     fi
 

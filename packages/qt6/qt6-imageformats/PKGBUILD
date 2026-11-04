@@ -1,0 +1,45 @@
+# Maintainer: Revanth Reddy Nemtoor <revanthreddyn123@gmail.com>
+pkgname=qt6-imageformats
+pkgver=6.12.0
+pkgrel=1
+pkgdesc="Plugins for additional image formats: TIFF, MNG, TGA, WBMP, WEBP (for Darwin)"
+arch=('darwin_x86_64' 'darwin_arm64')
+url="https://www.qt.io"
+license=('LGPL-3.0-only' 'GPL-2.0-only' 'GPL-3.0-only')
+depends=('qt6-base')
+options=('!strip')
+source=("https://download.qt.io/official_releases/qt/6.12/${pkgver}/submodules/qtimageformats-everywhere-src-${pkgver}.tar.xz")
+sha256sums=('0943132b5db8de6b6a7f1d162682173e8763c7ed94e80fd39113292845f67762')
+
+build() {
+  local _arch
+  case "$(uname -m)" in
+    x86_64) _arch="x86_64" ;;
+    arm64)  _arch="arm64" ;;
+    *)      _arch="$(uname -m)" ;;
+  esac
+
+  export PKG_CONFIG_PATH="/opt/pacman/lib/pkgconfig"
+  export PATH="/opt/pacman/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+  cmake -B build -S "qtimageformats-everywhere-src-${pkgver}" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/pacman \
+    -DCMAKE_OSX_ARCHITECTURES="${_arch}" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 \
+    -DCMAKE_PREFIX_PATH=/opt/pacman \
+    -DCMAKE_IGNORE_PREFIX_PATH="/opt/local;/usr/local" \
+    -DBUILD_TESTING=OFF
+
+  cmake --build build --parallel
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  find "${pkgdir}" -name ".DS_Store" -delete
+
+  find "${pkgdir}" -type f -exec sh -c '
+    file "$1" | grep -qE "Mach-O.*(executable|dynamically linked shared library|bundle)" && codesign --sign - --force "$1" 2>/dev/null || true
+  ' _ {} \;
+}
+
