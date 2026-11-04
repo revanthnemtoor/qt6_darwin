@@ -52,8 +52,16 @@ build() {
 package() {
   DESTDIR="${pkgdir}" cmake --install build
 
+  # Expose developer tools from libexec/ into bin/ so moc, rcc, uic, etc. are on PATH
+  install -d "${pkgdir}/opt/pacman/bin"
+  for tool in moc rcc uic qlalr qvkgen tracegen syncqt cmake_automoc_parser; do
+    if [[ -f "${pkgdir}/opt/pacman/libexec/${tool}" ]]; then
+      ln -sf "../libexec/${tool}" "${pkgdir}/opt/pacman/bin/${tool}"
+    fi
+  done
+
   # Ad-hoc sign all Mach-O executables, dylibs, and plugins
   find "${pkgdir}" -type f -exec sh -c '
-    file "$1" | grep -q "Mach-O" && codesign --sign - --force "$1" 2>/dev/null || true
+    file "$1" | grep -qE "Mach-O.*(executable|dynamically linked shared library|bundle)" && codesign --sign - --force "$1" 2>/dev/null || true
   ' _ {} \;
 }

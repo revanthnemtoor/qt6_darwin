@@ -3,8 +3,17 @@ set -euo pipefail
 
 # ==============================================================================
 # auto-update-and-package.sh
-# Automated update checker and multi-architecture packager for Qt 6 on Darwin.
-# Designed for standalone use or integration into a daily master update orchestrator.
+# Per-module upstream stable git/release checker, hash recorder (SHA-256/SHA-512/Git),
+# and conditional multi-architecture builder/packager for Qt 6 on Darwin.
+#
+# Default behavior (unless --force is passed):
+#   Iterates through every Qt 6 module in topological order:
+#   - Queries upstream stable Git tags (code.qt.io) & release metadata (download.qt.io).
+#   - Only compiles and packages a module if a new stable update is available
+#     (or if its built .pkg.tar.zst archives are missing from out/).
+#   - Otherwise records its latest SHA-256, SHA-512, and Git commit hashes into
+#     out/latest-hashes.txt & out/latest-hashes.json, marks it 'latest', and
+#     moves immediately to the next module.
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,6 +23,7 @@ ARCH_TARGET="both" # x86_64, arm64, or both
 CHECK_ONLY=false
 FORCE=false
 JSON_OUTPUT=false
+ONLY_MODULE=""
 
 log() {
     if [[ "${JSON_OUTPUT}" == "false" ]]; then
@@ -25,7 +35,7 @@ error_exit() {
     if [[ "${JSON_OUTPUT}" == "true" ]]; then
         printf '{"status": "error", "message": "%s"}\n' "$1"
     else
-        echo -e "❌ ERROR: $1" >&2
+        echo -e "ERROR: $1" >&2
     fi
     exit 1
 }
@@ -37,9 +47,13 @@ while [[ $# -gt 0 ]]; do
             CHECK_ONLY=true
             shift
             ;;
-        --force)
+        --force|--rebuild)
             FORCE=true
             shift
+            ;;
+        --module)
+            ONLY_MODULE="$2"
+            shift 2
             ;;
         --out-dir|--output-dir)
             OUT_DIR="$2"
@@ -57,9 +71,10 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --check              Only check if a new upstream Qt 6 release is available."
-            echo "  --force              Force build/package even if already on the latest version."
-            echo "  --out-dir <DIR>      Destination directory for built .pkg.tar.zst packages (default: ./out)."
+            echo "  --check              Only check upstream stable versions/hashes without compiling."
+            echo "  --force, --rebuild   Force compile and package even if module is already at latest stable."
+            echo "  --module <NAME>      Only process a specific module (e.g., qt6-declarative or qtdeclarative)."
+            echo "  --out-dir <DIR>      Destination directory for packages and hash manifest (default: ./out)."
             echo "  --arch <ARCH>        Target architecture: x86_64, arm64, or both (default: both)."
             echo "  --json               Emit machine-readable JSON output for master script hooks."
             echo "  -h, --help           Show this help message."
@@ -71,121 +86,72 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-mkdir -p "${OUT_DIR}"
+mkdir -p "${OUT_DIR}" "${PROJECT_ROOT}/sources/qt6"
 
-# --- Upstream Version Discovery ---
-log "--> Checking upstream Qt releases at download.qt.io..."
-CURRENT_VERSION=$(grep -E '^pkgver=' "${PROJECT_ROOT}/packages/qt6/qt6-base/PKGBUILD" | head -n 1 | cut -d'=' -f2 | tr -d ' "')
+HASH_MANIFEST_TXT="${OUT_DIR}/latest-hashes.txt"
+HASH_MANIFEST_JSON="${OUT_DIR}/latest-hashes.json"
 
-# Query official_releases for highest stable Qt 6 minor release (e.g. 6.12)
-LATEST_MINOR=$(curl -fsSL https://download.qt.io/official_releases/qt/ | grep -o 'href="6\.[0-9]*/"' | tr -d 'href="/' | sort -V | tail -n 1 || echo "")
+# Topological module table:
+# short_name|pkgname|pkgdesc|depends
+declare -a ALL_MODULES=(
+    "qtbase|qt6-base|A cross-platform application and UI framework (core libraries for Darwin)|openssl pcre2 zstd"
+    "qtsvg|qt6-svg|Classes for displaying the contents of SVG files (Support for SVG 1.2 Tiny)|qt6-base"
+    "qtimageformats|qt6-imageformats|Plugins for additional image formats: TIFF, TGA, WBMP, WebP, ICNS, MNG|qt6-base"
+    "qtshadertools|qt6-shadertools|Provides functionality for the shader pipeline that allows Qt Quick to operate on Metal, Vulkan, and OpenGL|qt6-base"
+    "qttools|qt6-tools|A cross-platform application and UI framework (Development Tools, QtHelp, Designer, Linguist)|qt6-base"
+    "qtlanguageserver|qt6-languageserver|An implementation of the Language Server Protocol and JSON-RPC for Qt|qt6-base"
+    "qtdeclarative|qt6-declarative|Classes for QML and JavaScript languages (QtQml, QtQuick, QtQuickControls2, QtQuickLayouts)|qt6-base qt6-shadertools qt6-languageserver qt6-svg"
+    "qtquicktimeline|qt6-quicktimeline|Qt module for keyframe-based timeline construction and animations|qt6-base qt6-declarative"
+    "qtlottie|qt6-lottie|A family of player software for a certain json-based file format for describing 2d vector graphics animations|qt6-base qt6-declarative qt6-quicktimeline"
+    "qtquick3d|qt6-quick3d|Qt module and API for defining 3D content in Qt Quick|qt6-base qt6-declarative qt6-shadertools qt6-quicktimeline"
+    "qtquick3dphysics|qt6-quick3dphysics|High-level physics simulation API for Qt Quick 3D|qt6-base qt6-declarative qt6-quick3d qt6-shadertools"
+    "qtmultimedia|qt6-multimedia|Classes for audio, video, radio and camera functionality (native Darwin AVFoundation / CoreAudio backend)|qt6-base qt6-shadertools qt6-declarative qt6-quick3d"
+    "qtnetworkauth|qt6-networkauth|Network authentication module (OAuth 1 and OAuth 2 support)|qt6-base"
+    "qtwebsockets|qt6-websockets|Provides WebSocket communication compliant with RFC 6455|qt6-base qt6-declarative"
+    "qtserialport|qt6-serialport|Provides access to hardware and virtual serial ports (IOKit backend on Darwin)|qt6-base"
+    "qtconnectivity|qt6-connectivity|Provides access to Bluetooth hardware (native CoreBluetooth / IOBluetooth backend on Darwin)|qt6-base qt6-declarative"
+)
+
+# --- Discover Latest Upstream Stable Release Version ---
+log "--> Querying upstream stable Qt 6 release at download.qt.io..."
+FALLBACK_VERSION=$(grep -E '^pkgver=' "${PROJECT_ROOT}/packages/qt6/qt6-base/PKGBUILD" | head -n 1 | cut -d'=' -f2 | tr -d ' "')
+LATEST_MINOR=$(curl -fsSL --max-time 15 https://download.qt.io/official_releases/qt/ 2>/dev/null | grep -o 'href="6\.[0-9]*/"' | tr -d 'href="/' | sort -V | tail -n 1 || echo "")
 if [[ -z "${LATEST_MINOR}" ]]; then
-    LATEST_MINOR="6.12"
+    LATEST_MINOR="${FALLBACK_VERSION%.*}"
 fi
-
-# Query patch release under the latest minor directory (e.g. 6.12.0)
-LATEST_UPSTREAM=$(curl -fsSL "https://download.qt.io/official_releases/qt/${LATEST_MINOR}/" | grep -o "href=\"${LATEST_MINOR}\.[0-9]*/\"" | tr -d 'href="/' | sort -V | tail -n 1 || echo "")
+LATEST_UPSTREAM=$(curl -fsSL --max-time 15 "https://download.qt.io/official_releases/qt/${LATEST_MINOR}/" 2>/dev/null | grep -o "href=\"${LATEST_MINOR}\.[0-9]*/\"" | tr -d 'href="/' | sort -V | tail -n 1 || echo "")
 if [[ -z "${LATEST_UPSTREAM}" ]]; then
-    LATEST_UPSTREAM="${CURRENT_VERSION}"
+    LATEST_UPSTREAM="${FALLBACK_VERSION}"
 fi
+log "  Latest upstream stable release: ${LATEST_UPSTREAM}"
 
-log "  Local version:    ${CURRENT_VERSION}"
-log "  Upstream version: ${LATEST_UPSTREAM}"
-
-UPDATE_AVAILABLE=false
-if [[ "${CURRENT_VERSION}" != "${LATEST_UPSTREAM}" ]]; then
-    UPDATE_AVAILABLE=true
-fi
-
-if [[ "${CHECK_ONLY}" == "true" ]]; then
-    if [[ "${JSON_OUTPUT}" == "true" ]]; then
-        printf '{"status": "checked", "current_version": "%s", "latest_version": "%s", "update_available": %s}\n' \
-            "${CURRENT_VERSION}" "${LATEST_UPSTREAM}" "${UPDATE_AVAILABLE}"
+# Query upstream stable git tag commit hash for a module (fallback to "none" if offline)
+get_upstream_git_info() {
+    local mod_short="$1"
+    local target_ver="$2"
+    local git_url="https://code.qt.io/qt/${mod_short}.git"
+    local ref_line
+    ref_line=$(git ls-remote --tags "${git_url}" "refs/tags/v${target_ver}" "refs/tags/v${target_ver}^{}" 2>/dev/null | tail -n 1 || true)
+    if [[ -n "${ref_line}" ]]; then
+        echo "${ref_line}" | awk '{print $1}'
     else
-        if [[ "${UPDATE_AVAILABLE}" == "true" ]]; then
-            echo "Update available: ${CURRENT_VERSION} -> ${LATEST_UPSTREAM}"
-            exit 10
-        else
-            echo "Already up-to-date at ${CURRENT_VERSION}."
-            exit 0
-        fi
+        echo "tarball-v${target_ver}"
     fi
-    if [[ "${UPDATE_AVAILABLE}" == "true" ]]; then exit 10; else exit 0; fi
-fi
+}
 
-MODULES=("qt6-base" "qt6-svg" "qt6-imageformats" "qt6-shadertools" "qt6-tools")
-
-if [[ "${UPDATE_AVAILABLE}" == "false" && "${FORCE}" == "false" ]]; then
-    # Check if all module packages already exist in OUT_DIR for both architectures
-    ALL_EXIST=true
-    EXISTING_PKGS=()
-    for mod in "${MODULES[@]}"; do
-        for arch in x86_64 arm64; do
-            pkg="${OUT_DIR}/${mod}-${CURRENT_VERSION}-1-darwin_${arch}.pkg.tar.zst"
-            if [[ ! -f "${pkg}" ]]; then
-                ALL_EXIST=false
-            else
-                EXISTING_PKGS+=("${pkg}")
-            fi
-        done
-    done
-    if [[ "${ALL_EXIST}" == "true" ]]; then
-        log "✓ Up-to-date. All ${#EXISTING_PKGS[@]} module packages already exist in: ${OUT_DIR}"
-        if [[ "${JSON_OUTPUT}" == "true" ]]; then
-            PKG_LIST_JSON=$(printf '"%s",' "${EXISTING_PKGS[@]}" | sed 's/,$//')
-            printf '{"status": "up_to_date", "version": "%s", "packages": [%s]}\n' \
-                "${CURRENT_VERSION}" "${PKG_LIST_JSON}"
-        fi
-        exit 0
-    fi
-fi
-
-TARGET_VERSION="${LATEST_UPSTREAM}"
-
-# --- Source Acquisition & Checksum Retrieval ---
-SOURCE_DIR="${PROJECT_ROOT}/sources/qt6"
-mkdir -p "${SOURCE_DIR}"
-ARCHIVE_NAME="qtbase-everywhere-src-${TARGET_VERSION}.tar.xz"
-SOURCE_ARCHIVE="${SOURCE_DIR}/${ARCHIVE_NAME}"
-ARCHIVE_URL="https://download.qt.io/official_releases/qt/${TARGET_VERSION%.*}/${TARGET_VERSION}/submodules/${ARCHIVE_NAME}"
-
-if [[ ! -f "${SOURCE_ARCHIVE}" ]]; then
-    log "--> Downloading source archive: ${ARCHIVE_URL}..."
-    curl -fSL -o "${SOURCE_ARCHIVE}" "${ARCHIVE_URL}"
-fi
-
-# Retrieve upstream SHA-256 from mirrorlist
-log "--> Verifying SHA-256 for ${ARCHIVE_NAME}..."
-EXPECTED_SHA=$(curl -fsSL "${ARCHIVE_URL}.mirrorlist" | grep -A 2 -i "SHA-256 Hash" | grep -o '[0-9a-f]\{64\}' | head -n 1 || echo "")
-ACTUAL_SHA=$(shasum -a 256 "${SOURCE_ARCHIVE}" | awk '{print $1}')
-
-if [[ -n "${EXPECTED_SHA}" && "${EXPECTED_SHA}" != "${ACTUAL_SHA}" ]]; then
-    error_exit "SHA-256 mismatch! Found: ${ACTUAL_SHA}, Expected: ${EXPECTED_SHA}"
-fi
-log "  ✓ Source verified (${ACTUAL_SHA})"
-
-# Update PKGBUILD version if needed
-sed -i '' "s/^pkgver=.*/pkgver=${TARGET_VERSION}/" "${PROJECT_ROOT}/packages/qt6/qt6-base/PKGBUILD"
-sed -i '' "s/^sha256sums=.*/sha256sums=('${ACTUAL_SHA}')/" "${PROJECT_ROOT}/packages/qt6/qt6-base/PKGBUILD"
-
-# --- Packaging Function ---
-package_arch() {
+# Build & package qt6-base for a given architecture
+build_qtbase_arch() {
     local ARCH="$1"
+    local TARGET_VERSION="$2"
     local STAGE_DIR="${PROJECT_ROOT}/staging/pkg_${ARCH}"
     local BUILD_DIR="${PROJECT_ROOT}/build/build_${ARCH}"
-    local PKG_NAME="qt6-base-${TARGET_VERSION}-1-darwin_${ARCH}.pkg.tar.zst"
-    local FINAL_PKG="${OUT_DIR}/${PKG_NAME}"
+    local FINAL_PKG="${OUT_DIR}/qt6-base-${TARGET_VERSION}-1-darwin_${ARCH}.pkg.tar.zst"
+    local SOURCE_DIR="${PROJECT_ROOT}/sources/qt6"
 
-    log "\n=========================================="
-    log "--> Building and Packaging for: darwin_${ARCH}"
-    log "=========================================="
-
-    # If existing trial_build matches, we can use it to avoid redundant recompilation
     if [[ "${ARCH}" == "x86_64" && -f "${PROJECT_ROOT}/build/trial_build/build.ninja" ]]; then
         BUILD_DIR="${PROJECT_ROOT}/build/trial_build"
     fi
-    mkdir -p "${BUILD_DIR}"
-    mkdir -p "${STAGE_DIR}"
+    mkdir -p "${BUILD_DIR}" "${STAGE_DIR}"
 
     local CMAKE_ARCH_FLAGS=()
     if [[ "${ARCH}" == "x86_64" ]]; then
@@ -199,7 +165,7 @@ package_arch() {
             -DINPUT_doubleconversion=qt
             -DINPUT_sqlite=qt
         )
-    elif [[ "${ARCH}" == "arm64" ]]; then
+    else
         CMAKE_ARCH_FLAGS=(
             -DCMAKE_OSX_ARCHITECTURES="arm64"
             -DQT_HOST_PATH="/opt/pacman"
@@ -216,10 +182,10 @@ package_arch() {
     local SRC_ROOT="${SOURCE_DIR}/qtbase-everywhere-src-${TARGET_VERSION}"
     if [[ -d "${PROJECT_ROOT}/build/qtbase-everywhere-src-${TARGET_VERSION}" ]]; then
         SRC_ROOT="${PROJECT_ROOT}/build/qtbase-everywhere-src-${TARGET_VERSION}"
+    elif [[ ! -d "${SRC_ROOT}" ]]; then
+        tar -xf "${SOURCE_DIR}/qtbase-everywhere-src-${TARGET_VERSION}.tar.xz" -C "${SOURCE_DIR}"
     fi
 
-    # Configure
-    log "  Configuring CMake..."
     cmake -B "${BUILD_DIR}" -S "${SRC_ROOT}" -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/pacman \
@@ -230,39 +196,30 @@ package_arch() {
         -DBUILD_EXAMPLES=OFF \
         "${CMAKE_ARCH_FLAGS[@]}"
 
-    # Build
-    log "  Building Qt modules (parallel)..."
     cmake --build "${BUILD_DIR}" --parallel
 
-    # Stage Install
-    log "  Installing into staging root..."
     rm -rf "${STAGE_DIR}"
     mkdir -p "${STAGE_DIR}"
     DESTDIR="${STAGE_DIR}" cmake --install "${BUILD_DIR}"
 
-    # --- Clean macOS Finder Junk ---
-    # Note: Do NOT delete plugins/permissions/objects-Release/*.cpp.o as they are
-    # CMake IMPORTED_OBJECTS_RELEASE targets required by Qt6CoreConfig.cmake on Darwin.
-    log "  Purging macOS metadata (.DS_Store)..."
-    find "${STAGE_DIR}" -name ".DS_Store" -delete
+    mkdir -p "${STAGE_DIR}/opt/pacman/bin"
+    for tool in moc rcc uic qlalr qvkgen tracegen syncqt cmake_automoc_parser; do
+        if [[ -f "${STAGE_DIR}/opt/pacman/libexec/${tool}" ]]; then
+            ln -sf "../libexec/${tool}" "${STAGE_DIR}/opt/pacman/bin/${tool}"
+        fi
+    done
 
-    # Ad-hoc sign all Mach-O executables, dylibs, and bundles (skip .o object files)
-    log "  Applying ad-hoc codesigning..."
+    find "${STAGE_DIR}" -name ".DS_Store" -delete 2>/dev/null || true
     find "${STAGE_DIR}" -type f -exec sh -c '
         file "$1" | grep -qE "Mach-O.*(executable|dynamically linked shared library|bundle)" && codesign --sign - --force "$1" 2>/dev/null || true
     ' _ {} \;
 
-    # Audit for forbidden linkage
-    log "  Auditing binary dependencies..."
     "${SCRIPT_DIR}/verify-package.sh" "${STAGE_DIR}"
 
-    # Calculate installed size in bytes
-    local INSTALLED_SIZE
+    local INSTALLED_SIZE EPOCH_TIME
     INSTALLED_SIZE=$(du -sk "${STAGE_DIR}/opt/pacman" | awk '{print $1 * 1024}')
-    local EPOCH_TIME
     EPOCH_TIME=$(date +%s)
 
-    # Generate .PKGINFO
     cat <<EOF > "${STAGE_DIR}/.PKGINFO"
 # Generated for Pacman on Darwin
 pkgname = qt6-base
@@ -272,7 +229,7 @@ pkgver = ${TARGET_VERSION}-1
 pkgdesc = A cross-platform application and UI framework (core libraries for Darwin)
 url = https://www.qt.io
 builddate = ${EPOCH_TIME}
-packager = Revanth Reddy Nemtoor <revanthreddyn123@gmail.com>
+packager = Revanth <revanth@darwin>
 size = ${INSTALLED_SIZE}
 arch = darwin_${ARCH}
 license = LGPL-3.0-only
@@ -283,116 +240,221 @@ depend = pcre2
 depend = zstd
 EOF
 
-    # Generate .BUILDINFO
     cat <<EOF > "${STAGE_DIR}/.BUILDINFO"
 format = 2
 pkgname = qt6-base
 pkgbase = qt6-base
 pkgver = ${TARGET_VERSION}-1
 pkgarch = darwin_${ARCH}
-packager = Revanth Reddy Nemtoor <revanthreddyn123@gmail.com>
+packager = Revanth <revanth@darwin>
 builddate = ${EPOCH_TIME}
 builddir = ${PROJECT_ROOT}/build
 startdir = ${PROJECT_ROOT}
-buildtool = makepkg
-buildtoolver = 7.1.0
-buildenv = !distcc
-buildenv = color
-buildenv = !ccache
-buildenv = check
-buildenv = !sccache
-buildenv = !sign
-options = !strip
-options = docs
-options = staticlibs
-options = emptydirs
-options = purge
-options = !debug
-options = !lto
-options = !autodeps
+buildtool = makepkg-darwin
 EOF
 
-    # Generate .MTREE (shell-agnostic via find + sort -z, normalized to root:wheel 0:0)
-    log "  Generating .MTREE file..."
     (
         cd "${STAGE_DIR}"
         find .PKGINFO .BUILDINFO opt -print0 | LC_ALL=C /usr/bin/sort -z | \
             LANG=C bsdtar --uid 0 --gid 0 --uname root --gname wheel -cnf - --format=mtree \
                 --options='!all,use-set,type,uid,gid,mode,time,size,sha256,link' \
                 --null --files-from - | gzip -c -f -n > .MTREE
+        find .PKGINFO .BUILDINFO .MTREE opt -print0 | LC_ALL=C /usr/bin/sort -z | \
+            LANG=C bsdtar --uid 0 --gid 0 --uname root --gname wheel -cnf - --null --files-from - | \
+            zstd -T0 -19 -o "${FINAL_PKG}"
     )
-
-    # Compress into .pkg.tar.zst using bsdtar and zstd -19
-    log "  Compressing package into ${FINAL_PKG}..."
-    (
-        cd "${STAGE_DIR}"
-        (
-            printf '%s\0' .PKGINFO .BUILDINFO .MTREE
-            find opt -print0 | LC_ALL=C /usr/bin/sort -z
-        ) | LANG=C bsdtar --no-fflags --no-read-sparse --uid 0 --gid 0 --uname root --gname wheel -cnf - --null --files-from - | \
-            /opt/pacman/bin/zstd -c -T0 -19 -z > "${FINAL_PKG}"
-    )
-
-    log "✓ Package successfully created: ${FINAL_PKG}"
 }
 
-# --- Execution ---
-if [[ ! -d "${SOURCE_DIR}/qtbase-everywhere-src-${TARGET_VERSION}" ]]; then
-    log "--> Unpacking source archive: ${SOURCE_ARCHIVE}..."
-    tar -xf "${SOURCE_ARCHIVE}" -C "${SOURCE_DIR}"
-fi
+# Prepare fresh hash manifest headers
+NOW_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+{
+    echo "# Qt 6 Darwin Module State & Cryptographic Hash Manifest"
+    echo "# Generated: ${NOW_ISO}"
+    echo "# Format: pkgname | status | version | git_commit | src_sha256 | src_sha512 | x86_64_sha256 | x86_64_sha512 | arm64_sha256 | arm64_sha512"
+    echo "# ----------------------------------------------------------------------------------------------------------------------------------"
+} > "${HASH_MANIFEST_TXT}.tmp"
 
+JSON_ENTRIES=()
 BUILT_PACKAGES=()
+SKIPPED_MODULES=0
+COMPILED_MODULES=0
+UPDATES_FOUND=0
 
-if [[ "${ARCH_TARGET}" == "x86_64" || "${ARCH_TARGET}" == "both" ]]; then
-    package_arch "x86_64"
-    BUILT_PACKAGES+=("${OUT_DIR}/qt6-base-${TARGET_VERSION}-1-darwin_x86_64.pkg.tar.zst")
-fi
+for entry in "${ALL_MODULES[@]}"; do
+    IFS='|' read -r mod_short pkg_name pkg_desc pkg_deps <<< "${entry}"
 
-if [[ "${ARCH_TARGET}" == "arm64" || "${ARCH_TARGET}" == "both" ]]; then
-    package_arch "arm64"
-    BUILT_PACKAGES+=("${OUT_DIR}/qt6-base-${TARGET_VERSION}-1-darwin_arm64.pkg.tar.zst")
-fi
+    if [[ -n "${ONLY_MODULE}" && "${ONLY_MODULE}" != "${pkg_name}" && "${ONLY_MODULE}" != "${mod_short}" ]]; then
+        continue
+    fi
 
-# Build additional Qt 6 modules if their tarballs are present
-declare -a SUBMODULES=(
-    "qtsvg|qt6-svg|Classes for displaying the contents of SVG files (Support for SVG 1.2 Tiny)"
-    "qtimageformats|qt6-imageformats|Plugins for additional image formats: TIFF, TGA, WBMP, WebP, ICNS, MNG"
-    "qtshadertools|qt6-shadertools|Provides functionality for the shader pipeline that allows Qt Quick to operate on Metal, Vulkan, and OpenGL"
-    "qttools|qt6-tools|A cross-platform application and UI framework (Development Tools, QtHelp, Designer, Linguist)"
-)
+    pkgbuild_path="${PROJECT_ROOT}/packages/qt6/${pkg_name}/PKGBUILD"
+    local_ver=$(grep -E '^pkgver=' "${pkgbuild_path}" | head -n 1 | cut -d'=' -f2 | tr -d ' "' || echo "${LATEST_UPSTREAM}")
+    local_sha256=$(grep -E '^sha256sums=' "${pkgbuild_path}" | grep -o '[0-9a-f]\{64\}' | head -n 1 || echo "")
 
-for entry in "${SUBMODULES[@]}"; do
-    IFS='|' read -r mod_short pkg_name pkg_desc <<< "${entry}"
-    QT_VERSION="${TARGET_VERSION}" "${SCRIPT_DIR}/build-module.sh" "${mod_short}" "${pkg_name}" "${pkg_desc}" qt6-base
+    archive_name="${mod_short}-everywhere-src-${LATEST_UPSTREAM}.tar.xz"
+    source_archive="${PROJECT_ROOT}/sources/qt6/${archive_name}"
+    archive_url="https://download.qt.io/official_releases/qt/${LATEST_UPSTREAM%.*}/${LATEST_UPSTREAM}/submodules/${archive_name}"
+
+    # Check if local source tarball already matches local_sha256 when version hasn't changed
+    upstream_sha256=""
+    if [[ "${local_ver}" == "${LATEST_UPSTREAM}" && -f "${source_archive}" && -n "${local_sha256}" ]]; then
+        upstream_sha256="${local_sha256}"
+    else
+        upstream_sha256=$(curl -fsSL --max-time 15 "${archive_url}.mirrorlist" 2>/dev/null | grep -A 2 -i "SHA-256 Hash" | grep -o '[0-9a-f]\{64\}' | head -n 1 || echo "${local_sha256}")
+    fi
+
+    git_commit=$(get_upstream_git_info "${mod_short}" "${LATEST_UPSTREAM}")
+
+    pkg_x86="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-1-darwin_x86_64.pkg.tar.zst"
+    pkg_arm="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-1-darwin_arm64.pkg.tar.zst"
+
+    needs_update=false
+    update_reason=""
+    if [[ "${local_ver}" != "${LATEST_UPSTREAM}" ]]; then
+        needs_update=true
+        update_reason="new upstream version (${local_ver} -> ${LATEST_UPSTREAM})"
+        UPDATES_FOUND=$((UPDATES_FOUND + 1))
+    elif [[ -n "${upstream_sha256}" && "${local_sha256}" != "${upstream_sha256}" ]]; then
+        needs_update=true
+        update_reason="upstream source SHA-256 changed"
+        UPDATES_FOUND=$((UPDATES_FOUND + 1))
+    fi
+
+    pkgs_missing=false
     if [[ "${ARCH_TARGET}" == "x86_64" || "${ARCH_TARGET}" == "both" ]]; then
-        BUILT_PACKAGES+=("${OUT_DIR}/${pkg_name}-${TARGET_VERSION}-1-darwin_x86_64.pkg.tar.zst")
+        [[ -f "${pkg_x86}" ]] || pkgs_missing=true
     fi
     if [[ "${ARCH_TARGET}" == "arm64" || "${ARCH_TARGET}" == "both" ]]; then
-        BUILT_PACKAGES+=("${OUT_DIR}/${pkg_name}-${TARGET_VERSION}-1-darwin_arm64.pkg.tar.zst")
+        [[ -f "${pkg_arm}" ]] || pkgs_missing=true
     fi
+
+    if [[ "${CHECK_ONLY}" == "true" ]]; then
+        log "  [${pkg_name}] local=${local_ver} upstream=${LATEST_UPSTREAM} git=${git_commit:0:12} update=${needs_update} missing_pkg=${pkgs_missing}"
+        continue
+    fi
+
+    # Decide whether to compile or skip & record hashes
+    if [[ "${FORCE}" == "true" || "${needs_update}" == "true" || "${pkgs_missing}" == "true" ]]; then
+        if [[ "${FORCE}" == "true" ]]; then
+            update_reason="forced rebuild (--force)"
+        elif [[ "${pkgs_missing}" == "true" && "${needs_update}" == "false" ]]; then
+            update_reason="package archive missing in out/"
+        fi
+        log "==> [${pkg_name}] Compiling & packaging (${update_reason})..."
+
+        if [[ ! -f "${source_archive}" ]]; then
+            log "  Downloading ${archive_url}..."
+            curl -fSL --retry 3 -o "${source_archive}" "${archive_url}"
+        fi
+
+        actual_src_sha256=$(shasum -a 256 "${source_archive}" | awk '{print $1}')
+        if [[ -n "${upstream_sha256}" && "${actual_src_sha256}" != "${upstream_sha256}" ]]; then
+            error_exit "SHA-256 mismatch for ${archive_name}: expected ${upstream_sha256}, got ${actual_src_sha256}"
+        fi
+
+        # Update PKGBUILD if version or checksum changed
+        sed -i '' "s/^pkgver=.*/pkgver=${LATEST_UPSTREAM}/" "${pkgbuild_path}"
+        sed -i '' "s/^sha256sums=.*/sha256sums=('${actual_src_sha256}')/" "${pkgbuild_path}"
+
+        if [[ "${pkg_name}" == "qt6-base" ]]; then
+            if [[ "${ARCH_TARGET}" == "x86_64" || "${ARCH_TARGET}" == "both" ]]; then
+                build_qtbase_arch "x86_64" "${LATEST_UPSTREAM}"
+            fi
+            if [[ "${ARCH_TARGET}" == "arm64" || "${ARCH_TARGET}" == "both" ]]; then
+                build_qtbase_arch "arm64" "${LATEST_UPSTREAM}"
+            fi
+        else
+            # shellcheck disable=SC2086
+            FORCE_BUILD=1 QT_VERSION="${LATEST_UPSTREAM}" "${SCRIPT_DIR}/build-module.sh" "${mod_short}" "${pkg_name}" "${pkg_desc}" ${pkg_deps}
+        fi
+        COMPILED_MODULES=$((COMPILED_MODULES + 1))
+        mod_action="compiled"
+    else
+        log "==> [${pkg_name}] Already at latest stable (${LATEST_UPSTREAM}). Recording hashes & moving to next module."
+        SKIPPED_MODULES=$((SKIPPED_MODULES + 1))
+        mod_action="latest"
+    fi
+
+    # Compute source & package SHA-256 and SHA-512 hashes
+    if [[ -f "${source_archive}" ]]; then
+        src_sha256=$(shasum -a 256 "${source_archive}" | awk '{print $1}')
+        src_sha512=$(shasum -a 512 "${source_archive}" | awk '{print $1}')
+    else
+        src_sha256="${local_sha256:-none}"
+        src_sha512="none"
+    fi
+
+    x86_sha256="none"
+    x86_sha512="none"
+    if [[ -f "${pkg_x86}" ]]; then
+        x86_sha256=$(shasum -a 256 "${pkg_x86}" | awk '{print $1}')
+        x86_sha512=$(shasum -a 512 "${pkg_x86}" | awk '{print $1}')
+        BUILT_PACKAGES+=("${pkg_x86}")
+    fi
+
+    arm_sha256="none"
+    arm_sha512="none"
+    if [[ -f "${pkg_arm}" ]]; then
+        arm_sha256=$(shasum -a 256 "${pkg_arm}" | awk '{print $1}')
+        arm_sha512=$(shasum -a 512 "${pkg_arm}" | awk '{print $1}')
+        BUILT_PACKAGES+=("${pkg_arm}")
+    fi
+
+    echo "${pkg_name} | latest | ${LATEST_UPSTREAM}-1 | ${git_commit} | ${src_sha256} | ${src_sha512} | ${x86_sha256} | ${x86_sha512} | ${arm_sha256} | ${arm_sha512}" >> "${HASH_MANIFEST_TXT}.tmp"
+
+    JSON_ENTRIES+=("$(printf '{"package":"%s","module":"%s","status":"latest","action":"%s","version":"%s-1","git_commit":"%s","source_sha256":"%s","source_sha512":"%s","darwin_x86_64":{"file":"%s","sha256":"%s","sha512":"%s"},"darwin_arm64":{"file":"%s","sha256":"%s","sha512":"%s"}}' \
+        "${pkg_name}" "${mod_short}" "${mod_action}" "${LATEST_UPSTREAM}" "${git_commit}" "${src_sha256}" "${src_sha512}" \
+        "$(basename "${pkg_x86}")" "${x86_sha256}" "${x86_sha512}" \
+        "$(basename "${pkg_arm}")" "${arm_sha256}" "${arm_sha512}")")
 done
 
-# Generate Pacman repository databases in OUT_DIR
-if [[ -x "/opt/pacman/bin/repo-add" ]]; then
-    log "--> Updating Pacman repository databases in ${OUT_DIR}..."
-    if ls "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst >/dev/null 2>&1; then
-        /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-x86_64.db.tar.gz" "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst
+if [[ "${CHECK_ONLY}" == "true" ]]; then
+    rm -f "${HASH_MANIFEST_TXT}.tmp"
+    if [[ "${JSON_OUTPUT}" == "true" ]]; then
+        printf '{"status": "checked", "latest_version": "%s", "updates_found": %d}\n' "${LATEST_UPSTREAM}" "${UPDATES_FOUND}"
     fi
-    if ls "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst >/dev/null 2>&1; then
-        /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-arm64.db.tar.gz" "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst
+    if [[ ${UPDATES_FOUND} -gt 0 ]]; then exit 10; else exit 0; fi
+fi
+
+mv "${HASH_MANIFEST_TXT}.tmp" "${HASH_MANIFEST_TXT}"
+
+# Write JSON manifest
+{
+    printf '{\n  "generated_at": "%s",\n  "qt_version": "%s",\n  "compiled_count": %d,\n  "skipped_latest_count": %d,\n  "modules": [\n    ' \
+        "${NOW_ISO}" "${LATEST_UPSTREAM}" "${COMPILED_MODULES}" "${SKIPPED_MODULES}"
+    local_sep=""
+    for j in "${JSON_ENTRIES[@]}"; do
+        printf '%s%s' "${local_sep}" "${j}"
+        local_sep=$',\n    '
+    done
+    printf '\n  ]\n}\n'
+} > "${HASH_MANIFEST_JSON}"
+
+# Also mirror the latest hash manifest into packages/qt6/ for Git tracking
+cp -f "${HASH_MANIFEST_TXT}" "${PROJECT_ROOT}/packages/qt6/latest-hashes.txt"
+cp -f "${HASH_MANIFEST_JSON}" "${PROJECT_ROOT}/packages/qt6/latest-hashes.json"
+
+# Refresh Pacman repository databases if any module was compiled or if DBs do not exist yet
+if [[ -x "/opt/pacman/bin/repo-add" ]]; then
+    if [[ ${COMPILED_MODULES} -gt 0 || ! -f "${OUT_DIR}/qt6-darwin-x86_64.db.tar.gz" || ! -f "${OUT_DIR}/qt6-darwin-arm64.db.tar.gz" ]]; then
+        log "--> Updating Pacman repository databases in ${OUT_DIR}..."
+        if ls "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst >/dev/null 2>&1; then
+            /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-x86_64.db.tar.gz" "${OUT_DIR}"/*-darwin_x86_64.pkg.tar.zst
+        fi
+        if ls "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst >/dev/null 2>&1; then
+            /opt/pacman/bin/repo-add -q "${OUT_DIR}/qt6-darwin-arm64.db.tar.gz" "${OUT_DIR}"/*-darwin_arm64.pkg.tar.zst
+        fi
     fi
 fi
 
-log "\n=========================================="
-log "✓ ALL REQUESTED ARCHITECTURES PACKAGED CLEANLY"
-log "Output directory: ${OUT_DIR}"
-for pkg in "${BUILT_PACKAGES[@]}"; do
-    log "  - $(basename "${pkg}") ($(ls -lh "${pkg}" | awk '{print $5}'))"
-done
-log "=========================================="
+log "\n=================================================================="
+log "✓ MODULE UPDATE CHECK & PACKAGING COMPLETE (Qt ${LATEST_UPSTREAM})"
+log "  - Modules compiled/updated : ${COMPILED_MODULES}"
+log "  - Modules already latest   : ${SKIPPED_MODULES}"
+log "  - Hash manifest (text)     : ${HASH_MANIFEST_TXT}"
+log "  - Hash manifest (JSON)     : ${HASH_MANIFEST_JSON}"
+log "=================================================================="
 
 if [[ "${JSON_OUTPUT}" == "true" ]]; then
-    PKG_LIST_JSON=$(printf '"%s",' "${BUILT_PACKAGES[@]}" | sed 's/,$//')
-    printf '{"status": "success", "version": "%s", "packages": [%s]}\n' "${TARGET_VERSION}" "${PKG_LIST_JSON}"
+    cat "${HASH_MANIFEST_JSON}"
 fi

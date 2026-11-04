@@ -47,11 +47,24 @@ build_and_package_arch() {
     local pkg_arch="darwin_${arch}"
     local pkg_file="${OUT_DIR}/${PKG_NAME}-${QT_VER}-${PKGREL}-${pkg_arch}.pkg.tar.zst"
 
+    if [[ -f "${pkg_file}" && "${FORCE_BUILD:-0}" != "1" ]]; then
+        local sha256 sha512
+        sha256=$(shasum -a 256 "${pkg_file}" | awk '{print $1}')
+        sha512=$(shasum -a 512 "${pkg_file}" | awk '{print $1}')
+        echo "==> [${PKG_NAME} (${pkg_arch})] Already at latest stable (${QT_VER}-${PKGREL}), skipping compile (use FORCE_BUILD=1 to rebuild)."
+        echo "    sha256: ${sha256}"
+        echo "    sha512: ${sha512:0:64}..."
+        return 0
+    fi
+
     echo "=================================================================="
     echo "Building ${PKG_NAME} (${QT_VER}-${PKGREL}) for ${pkg_arch}"
     echo "=================================================================="
 
-    rm -rf "${build_dir}" "${stage_dir}"
+    rm -rf "${stage_dir}"
+    if [[ "${CLEAN_BUILD:-0}" == "1" ]]; then
+        rm -rf "${build_dir}"
+    fi
     mkdir -p "${build_dir}" "${stage_dir}"
 
     local extra_cmake_args=()
@@ -80,27 +93,43 @@ build_and_package_arch() {
         )
     fi
 
-    cmake -B "${build_dir}" -S "${SRC_DIR}" -G Ninja \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="/opt/pacman" \
-        -DCMAKE_IGNORE_PREFIX_PATH="/opt/local;/usr/local" \
-        -DCMAKE_OSX_ARCHITECTURES="${arch}" \
-        -DCMAKE_OSX_DEPLOYMENT_TARGET="15.0" \
-        -DCMAKE_INSTALL_RPATH="/opt/pacman/lib" \
-        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
-        -DQT_FEATURE_framework=OFF \
-        -DQT_BUILD_TESTS=OFF \
-        -DQT_BUILD_EXAMPLES=OFF \
-        "${extra_cmake_args[@]}"
+    if [[ ! -f "${build_dir}/build.ninja" || "${CLEAN_BUILD:-0}" == "1" ]]; then
+        cmake -B "${build_dir}" -S "${SRC_DIR}" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="/opt/pacman" \
+            -DCMAKE_IGNORE_PREFIX_PATH="/opt/local;/usr/local" \
+            -DCMAKE_OSX_ARCHITECTURES="${arch}" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="15.0" \
+            -DCMAKE_INSTALL_RPATH="/opt/pacman/lib" \
+            -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+            -DQT_FEATURE_framework=OFF \
+            -DQT_BUILD_TESTS=OFF \
+            -DQT_BUILD_EXAMPLES=OFF \
+            "${extra_cmake_args[@]}"
+    fi
 
     cmake --build "${build_dir}" --parallel "${JOBS}"
     if [[ "${MOD_NAME}" == "qttools" && "${arch}" == "arm64" ]]; then
         # When cross-compiling qttools, tool targets excluded from default 'all' must be built explicitly before install
         cmake --build "${build_dir}" --target qhelpgenerator qtattributionsscanner lconvert lcheck lrelease lrelease-pro lupdate lupdate-pro ltext2id --parallel "${JOBS}" || true
+    elif [[ "${MOD_NAME}" == "qtquick3dphysics" && "${arch}" == "arm64" ]]; then
+        cmake --build "${build_dir}" --target cooker --parallel "${JOBS}" || true
     fi
 
     echo "==> Staging ${PKG_NAME} (${pkg_arch}) into ${stage_dir}..."
     DESTDIR="${stage_dir}" cmake --install "${build_dir}"
+
+    # Expose any module libexec developer tools in /opt/pacman/bin via relative symlinks
+    if [[ -d "${stage_dir}/opt/pacman/libexec" ]]; then
+        mkdir -p "${stage_dir}/opt/pacman/bin"
+        for tool_path in "${stage_dir}/opt/pacman/libexec/"*; do
+            [[ -f "${tool_path}" && -x "${tool_path}" ]] || continue
+            tool_name="$(basename "${tool_path}")"
+            if [[ ! -e "${stage_dir}/opt/pacman/bin/${tool_name}" ]]; then
+                ln -sf "../libexec/${tool_name}" "${stage_dir}/opt/pacman/bin/${tool_name}"
+            fi
+        done
+    fi
 
     # Also install into cumulative arm64 sysroot so subsequent arm64 modules can link against it
     if [[ "${arch}" == "arm64" ]]; then
@@ -170,20 +199,28 @@ EOF
         cd "${stage_dir}"
         rm -f .MTREE "${pkg_file}"
         find .PKGINFO .BUILDINFO opt -print0 | LC_ALL=C /usr/bin/sort -z | \
-            bsdtar -cf - --null -T - \
+            bsdtar -cnf - --null -T - \
             --uid 0 --gid 0 --uname root --gname wheel \
             --format=mtree \
             --options='!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link' \
             | gzip -c -f -n > .MTREE
 
         find .PKGINFO .BUILDINFO .MTREE opt -print0 | LC_ALL=C /usr/bin/sort -z | \
-            bsdtar -cf - --null -T - \
+            bsdtar -cnf - --null -T - \
             --uid 0 --gid 0 --uname root --gname wheel \
             | zstd -T0 -19 -o "${pkg_file}"
     )
 
     echo "==> Packaged: ${pkg_file} ($(du -h "${pkg_file}" | awk '{print $1}'))"
     "${SCRIPT_DIR}/verify-package.sh" "${stage_dir}"
+
+    # On x86_64 host, install the newly built x86_64 package into /opt/pacman immediately
+    # so its host tools (e.g. Qt6QmlTools: qmltyperegistrar, qmlcachegen) are available
+    # in QT_HOST_PATH (/opt/pacman) when cross-compiling arm64!
+    if [[ "${arch}" == "x86_64" && -x "/opt/pacman/bin/pacman" ]]; then
+        echo "==> Installing ${pkg_file} into /opt/pacman (updating QT_HOST_PATH)..."
+        /opt/pacman/bin/pacman -U --noconfirm "${pkg_file}"
+    fi
 }
 
 if [[ "${ONLY_ARCH:-}" == "x86_64" ]]; then
