@@ -330,6 +330,7 @@ for entry in "${ALL_MODULES[@]}"; do
 
     pkgbuild_path="${PROJECT_ROOT}/packages/qt6/${pkg_name}/PKGBUILD"
     local_ver=$(grep -E '^pkgver=' "${pkgbuild_path}" | head -n 1 | cut -d'=' -f2 | tr -d ' "' || echo "${LATEST_UPSTREAM}")
+    local_pkgrel=$(grep -E '^pkgrel=' "${pkgbuild_path}" | head -n 1 | cut -d'=' -f2 | tr -d ' "' || echo "1")
     local_sha256=$(grep -E '^sha256sums=' "${pkgbuild_path}" | grep -o '[0-9a-f]\{64\}' | head -n 1 || echo "")
 
     archive_name="${mod_short}-everywhere-src-${LATEST_UPSTREAM}.tar.xz"
@@ -346,8 +347,8 @@ for entry in "${ALL_MODULES[@]}"; do
 
     git_commit=$(get_upstream_git_info "${mod_short}" "${LATEST_UPSTREAM}")
 
-    pkg_x86="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-1-darwin_x86_64.pkg.tar.zst"
-    pkg_arm="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-1-darwin_arm64.pkg.tar.zst"
+    pkg_x86="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-${local_pkgrel}-darwin_x86_64.pkg.tar.zst"
+    pkg_arm="${OUT_DIR}/${pkg_name}-${LATEST_UPSTREAM}-${local_pkgrel}-darwin_arm64.pkg.tar.zst"
 
     needs_update=false
     update_reason=""
@@ -443,10 +444,24 @@ for entry in "${ALL_MODULES[@]}"; do
         BUILT_PACKAGES+=("${pkg_arm}")
     fi
 
-    echo "${pkg_name} | latest | ${LATEST_UPSTREAM}-1 | ${git_commit} | ${src_sha256} | ${src_sha512} | ${x86_sha256} | ${x86_sha512} | ${arm_sha256} | ${arm_sha512}" >> "${HASH_MANIFEST_TXT}.tmp"
+    echo "${pkg_name} | latest | ${LATEST_UPSTREAM}-${local_pkgrel} | ${git_commit} | ${src_sha256} | ${src_sha512} | ${x86_sha256} | ${x86_sha512} | ${arm_sha256} | ${arm_sha512}" >> "${HASH_MANIFEST_TXT}.tmp"
 
-    JSON_ENTRIES+=("$(printf '{"package":"%s","module":"%s","status":"latest","action":"%s","version":"%s-1","git_commit":"%s","source_sha256":"%s","source_sha512":"%s","darwin_x86_64":{"file":"%s","sha256":"%s","sha512":"%s"},"darwin_arm64":{"file":"%s","sha256":"%s","sha512":"%s"}}' \
-        "${pkg_name}" "${mod_short}" "${mod_action}" "${LATEST_UPSTREAM}" "${git_commit}" "${src_sha256}" "${src_sha512}" \
+    if [[ "${pkg_name}" == "qt6-base" ]]; then
+        for bin_rel in "lib/libQt6Gui.6.12.0.dylib" "lib/libQt6Core.6.12.0.dylib" "plugins/platforms/libqcocoa.dylib"; do
+            x86_bin="${PROJECT_ROOT}/staging/pkg_x86_64/opt/pacman/${bin_rel}"
+            arm_bin="${PROJECT_ROOT}/staging/pkg_arm64/opt/pacman/${bin_rel}"
+            if [[ -f "${x86_bin}" && -f "${arm_bin}" ]]; then
+                bx86_256=$(shasum -a 256 "${x86_bin}" | awk '{print $1}')
+                bx86_512=$(shasum -a 512 "${x86_bin}" | awk '{print $1}')
+                barm_256=$(shasum -a 256 "${arm_bin}" | awk '{print $1}')
+                barm_512=$(shasum -a 512 "${arm_bin}" | awk '{print $1}')
+                echo "  └─ patched_binary: ${bin_rel} | x86_64_sha256=${bx86_256} | x86_64_sha512=${bx86_512} | arm64_sha256=${barm_256} | arm64_sha512=${barm_512}" >> "${HASH_MANIFEST_TXT}.tmp"
+            fi
+        done
+    fi
+
+    JSON_ENTRIES+=("$(printf '{"package":"%s","module":"%s","status":"latest","action":"%s","version":"%s-%s","git_commit":"%s","source_sha256":"%s","source_sha512":"%s","darwin_x86_64":{"file":"%s","sha256":"%s","sha512":"%s"},"darwin_arm64":{"file":"%s","sha256":"%s","sha512":"%s"}}' \
+        "${pkg_name}" "${mod_short}" "${mod_action}" "${LATEST_UPSTREAM}" "${local_pkgrel}" "${git_commit}" "${src_sha256}" "${src_sha512}" \
         "$(basename "${pkg_x86}")" "${x86_sha256}" "${x86_sha512}" \
         "$(basename "${pkg_arm}")" "${arm_sha256}" "${arm_sha512}")")
 done
