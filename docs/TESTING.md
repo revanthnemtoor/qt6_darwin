@@ -14,6 +14,7 @@
 | **Phase 7 Native Darwin Hardware Backends** | `AVFoundation`/`CoreAudio`, `IOKit`, `CoreBluetooth`, `OAuth2`, `WebSockets` | `tests/smoketest` | **VERIFIED** | 2 audio outputs (`44100 Hz` SpatialAudio), 6 IOKit serial ports, 1 CoreBluetooth adapter, OAuth2 flow, loopback `QWebSocketServer` |
 | **Functional `Qt6::Network` & OpenSSL 3** | `QTcpServer` + `QNetworkAccessManager` + `QSslSocket` | `tests/smoketest` | **VERIFIED** | Loopback HTTP `GET /health` round-trip (`200 OK`, body `QT6_DARWIN_NET_OK`) + `OpenSSL 3.6.3` TLS runtime verified |
 | **Functional `Qt6::OpenGL` Hardware Rendering** | `QOpenGLWidget` + `QOpenGLFunctions` | `tests/smoketest` | **VERIFIED** | Hardware GPU context initialized (`ATI Technologies Inc.`, `AMD Radeon Pro 560X OpenGL Engine`, `2.1 ATI-7.0.26`) and `paintGL()` frame rendered |
+| **Gwenview (`26.08.2-1`) + `breeze-icons` (`6.31.0-1`) GUI Validation** | `/opt/pacman/Applications/KDE/gwenview.app` | Multi-format & folder launch | **VERIFIED** | Opened JPEG, PNG, HEIC (`3024×4032`), TIFF, and folder thumbnail navigation with zero `SIGFPE` and zero `stderr` warnings (see [`DARWIN_PORTING_CHANGELOG.md`](DARWIN_PORTING_CHANGELOG.md)) |
 
 ## 2. 16-Module Complete Functional Validation Suite Log
 ```text

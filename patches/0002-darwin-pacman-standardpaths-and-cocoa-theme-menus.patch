@@ -1,0 +1,75 @@
+--- a/src/corelib/io/qstandardpaths_mac.mm
++++ b/src/corelib/io/qstandardpaths_mac.mm
+@@ -186,6 +186,34 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
+                     }
+                 }
+             }
+         }
++        QString pacmanAppShare = u"/opt/pacman/share"_s;
++        appendOrganizationAndApp(pacmanAppShare);
++        if (!dirs.contains(pacmanAppShare))
++            dirs.append(pacmanAppShare);
++#ifndef QT_BOOTSTRAPPED
++        const QString appName = QCoreApplication::applicationName();
++        if (!appName.isEmpty()) {
++            const QString pacmanDirectAppShare = u"/opt/pacman/share/"_s + appName;
++            if (!dirs.contains(pacmanDirectAppShare))
++                dirs.append(pacmanDirectAppShare);
++        }
++#endif
++    } else if (type == GenericDataLocation) {
++        const QString xdgDataDirs = qEnvironmentVariable("XDG_DATA_DIRS");
++        if (!xdgDataDirs.isEmpty()) {
++            const auto parts = xdgDataDirs.split(u':', Qt::SkipEmptyParts);
++            for (const QString &part : parts) {
++                if (!dirs.contains(part))
++                    dirs.append(part);
++            }
++        }
++        const QString pacmanShare = u"/opt/pacman/share"_s;
++        if (!dirs.contains(pacmanShare))
++            dirs.append(pacmanShare);
++    } else if (type == GenericConfigLocation || type == ConfigLocation) {
++        const QString pacmanXdg = u"/opt/pacman/etc/xdg"_s;
++        if (!dirs.contains(pacmanXdg))
++            dirs.append(pacmanXdg);
+     }
+ 
+     const QString localDir = writableLocation(type);
+--- a/src/plugins/platforms/cocoa/qcocoatheme.mm
++++ b/src/plugins/platforms/cocoa/qcocoatheme.mm
+@@ -449,6 +449,19 @@ QVariant QCocoaTheme::themeHint(ThemeHint hint) const
+     case IconPixmapSizes:
+         return QVariant::fromValue(QAppleIconEngine::availableIconSizes());
++    case QPlatformTheme::IconThemeSearchPaths: {
++        QStringList paths = QStandardPaths::locateAll(
++            QStandardPaths::GenericDataLocation, QStringLiteral("icons"), QStandardPaths::LocateDirectory);
++        const QString pacmanIcons = QStringLiteral("/opt/pacman/share/icons");
++        if (!paths.contains(pacmanIcons) && QFileInfo::exists(pacmanIcons))
++            paths.append(pacmanIcons);
++        return paths;
++    }
++    case QPlatformTheme::SystemIconThemeName:
++    case QPlatformTheme::SystemIconFallbackThemeName:
++        return QFileInfo::exists(QStringLiteral("/opt/pacman/share/icons/breeze/index.theme"))
++            ? QVariant(QStringLiteral("breeze"))
++            : QVariant(QStringLiteral("hicolor"));
+     case QPlatformTheme::PasswordMaskCharacter:
+         return QVariant(QChar(0x2022));
+--- a/src/plugins/platforms/cocoa/qcocoamenu.mm
++++ b/src/plugins/platforms/cocoa/qcocoamenu.mm
+@@ -194,11 +194,12 @@ void QCocoaMenu::removeMenuItem(QPlatformMenuItem *menuItem)
+     m_menuItems.removeOne(cocoaItem);
+     if (!cocoaItem->isMerged()) {
+-        if (m_nativeMenu != cocoaItem->nsItem().menu) {
+-            qCWarning(lcQpaMenus) << cocoaItem << "does not belong to" << m_nativeMenu;
+-            return;
++        if (NSMenuItem *nsItem = cocoaItem->nsItem()) {
++            if (nsItem.menu == m_nativeMenu)
++                [m_nativeMenu removeItem:nsItem];
++            else if (nsItem.menu)
++                [nsItem.menu removeItem:nsItem];
+         }
+-        [m_nativeMenu removeItem:cocoaItem->nsItem()];
+     }
+ }

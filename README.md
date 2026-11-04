@@ -9,7 +9,7 @@ Port, build, validate, and package Qt 6 natively from source for macOS (`darwin_
 
 | Order | Package | Description | Architectures |
 | :---: | :--- | :--- | :--- |
-| **1** | [`qt6-base`](packages/qt6/qt6-base/PKGBUILD) | Core, Gui, Widgets, Network, Sql, Concurrent, PrintSupport, OpenGL, DBus, Cocoa QPA plugin, `moc`, `rcc`, `uic` | `darwin_x86_64`, `darwin_arm64` |
+| **1** | [`qt6-base`](packages/qt6/qt6-base/PKGBUILD) (`6.12.0-2`, fork: [`revanthnemtoor/qtbase`](https://github.com/revanthnemtoor/qtbase)) | Core, Gui, Widgets, Network, Sql, Concurrent, PrintSupport, OpenGL, DBus, Cocoa QPA plugin, `moc`, `rcc`, `uic` (see [`docs/DARWIN_PORTING_CHANGELOG.md`](docs/DARWIN_PORTING_CHANGELOG.md)) | `darwin_x86_64`, `darwin_arm64` |
 | **2** | [`qt6-svg`](packages/qt6/qt6-svg/PKGBUILD) | SVG 1.2 Tiny rendering (`Qt6::Svg`, `Qt6::SvgWidgets`, `libqsvg` image & icon plugins) | `darwin_x86_64`, `darwin_arm64` |
 | **3** | [`qt6-imageformats`](packages/qt6/qt6-imageformats/PKGBUILD) | Extended image format plugins (`webp`, `tiff`, `icns`, `tga`, `wbmp`, `heic`, `jp2`) | `darwin_x86_64`, `darwin_arm64` |
 | **4** | [`qt6-shadertools`](packages/qt6/qt6-shadertools/PKGBUILD) | SPIR-V / Metal (`MSL`) / GLSL shader pipeline (`Qt6::ShaderTools`, `qsb`) | `darwin_x86_64`, `darwin_arm64` |
